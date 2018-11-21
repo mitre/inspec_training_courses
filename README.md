@@ -6,20 +6,20 @@ Table of Contents:
 ## InSpec Users Course
 
 #### Course Content
-[InSpec 101 Course Content](https://github.com/HackerShark/mitre_institute_inspec/blob/master/InSpec%20101%20User/InSpec101.md)
+[InSpec 101 Course Content](https://github.com/mitre/inspec_training_courses/blob/master/InSpec%20101%20User/InSpec101.md)
 
 #### Additional Resources
 Installation Guides:  
-[InSpec 101 Installation](https://github.com/HackerShark/mitre_institute_inspec/tree/master/InSpec%20101%20User/installation)
+[InSpec 101 Installation](https://github.com/mitre/inspec_training_courses/tree/master/InSpec%20101%20User/installation)
 
 ## InSpec Developer Course
 
 #### Course Content
-[InSpec 102 Course Content](https://github.com/HackerShark/mitre_institute_inspec/blob/master/InSpec%20102%20Dev/InSpec102.md)
+[InSpec 102 Course Content](https://github.com/mitre/inspec_training_courses/blob/master/InSpec%20102%20Dev/InSpec102.md)
 
 #### Additional Resources
 Installation Guides:  
-[InSpec 102 Installation](https://github.com/HackerShark/mitre_institute_inspec/tree/master/InSpec%20102%20Dev/installation)
+[InSpec 102 Installation](https://github.com/mitre/inspec_training_courses/tree/master/InSpec%20102%20Dev/installation)
 
 ### NOTICE
 
