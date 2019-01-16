@@ -65,47 +65,21 @@ InSpec operates with most orchestration and CM tools found in the DevOps pipelin
 
 ---
 ## Environment Setup
-# TODO: Update this section to use virtualbox images instead
+### Download VirtualBox Here
+[https://www.virtualbox.org/wiki/Downloads](https://www.virtualbox.org/wiki/Downloads)
 
+### Download VirtualBox Template Here
+[VirtualBox Template Download]()
+
+---
+### Setup Environments
 Start by creating a working directory. We recommend ~/learn-inspec.
 `mkdir ~/learn-inspec`
 
 Next, move to your working directory.
 `cd ~/learn-inspec`
 
-Next, get the Docker Compose file. Run the command that matches your system to download a file named `docker-compose-nginx.yml`.
-
 ---
-**Windows:**
-
-```$ Invoke-WebRequest -useb -o docker-compose-nginx.yml https://raw.githubusercontent.com/learn-chef/inspec/master/docker-compose-nginx.yml```
-
-**Mac:**
-
-```curl -o docker-compose-nginx.yml -s https://raw.githubusercontent.com/learn-chef/inspec/master/docker-compose-nginx.yml```
-
-**Linux:**
-
-```$ wget -O docker-compose-nginx.yml https://raw.githubusercontent.com/learn-chef/inspec/master/docker-compose-nginx.yml```
-
----
-Next, run the following `docker-compose` command to retrieve the latest workstation images.
-
-```$ docker-compose -f docker-compose-nginx.yml pull```
-
-Next, run the following `docker-compose` command to start the containers. The `-d` argument starts the containers in the background.
-
-```$ docker-compose -f docker-compose-nginx.yml up -d```
-
-Now that your containers are running in the background, run this command to start an interactive Bash session on the workstation container.
-
-```$ docker exec -it workstation bash```
-
----
-We will need to update the version of InSpec that is on the docker image to the latest version of InSpec, run this command in the bash session.
-
-```$ curl https://omnitruck.chef.io/install.sh | bash -s -- -P inspec```
-
 The workstation can connect to the target by the target's name, target. Run curl target and you see that NGINX is running.
 
 ---
@@ -135,8 +109,6 @@ $ curl target
 
 ---
 ## Creating InSpec profile
-# TODO: Update all connections for the above new virtualbox images
-
 Let's start by creating a profile that will contain NGINX tests.
 
 Start by moving to the /root directory.
@@ -161,7 +133,7 @@ Create new profile at /root/my_nginx
 ```
 
 ---
-### Understanding the profile structured
+### Understanding the profile structure
 
 Let's take a look at how the profile is structured. We'll start with how a profile's files are structured and then move to what makes up an InSpec control.
 
@@ -520,7 +492,7 @@ inspec> exit
 Run `inspec shell` a second time. This time, provide the `-t` argument to connect the shell session to the target container. This is similar to how you ran `inspec exec` in the [Try InSpec](https://learn.chef.io/modules/try-inspec#/step4.3) module to scan the target from the workstation.
 
 ```
-$ inspec shell -t ssh://root:password@target
+$ inspec shell -t ssh://TARGET_USERNAME:TARGET_PASSWORD@TARGET_IP
   Welcome to the interactive InSpec Shell
   To find out how to use it, type: help
 
@@ -654,11 +626,11 @@ The test has an impact of 1.0, meaning it is most critical. A failure might indi
 Next, run `inspec exec` to execute the profile on the remote target.
 
 ```
-$ inspec exec /root/my_nginx -t ssh://root:password@target
+$ inspec exec /root/my_nginx -t ssh://TARGET_USERNAME:TARGET_PASSWORD@TARGET_IP
 
   Profile: InSpec Profile (my_nginx)
   Version: 0.1.0
-  Target:  ssh://root@target:22
+  Target:  ssh://TARGET_USERNAME@TARGET_IP:22
 
     ✔  nginx-version: NGINX version
        ✔  Nginx Environment version should cmp >= "1.10.3"
@@ -701,11 +673,11 @@ The second control resembles the first; however, this version uses multiple `its
 Run `inspec exec` on the target.
 
 ```
-$ inspec exec /root/my_nginx -t ssh://root:password@target
+$ inspec exec /root/my_nginx -t ssh://TARGET_USERNAME:TARGET_PASSWORD@TARGET_IP
 
   Profile: InSpec Profile (my_nginx)
   Version: 0.1.0
-  Target:  ssh://root@target:22
+  Target:  ssh://TARGET_USERNAME@TARGET_IP:22
 
     ✔  nginx-version: NGINX version
        ✔  Nginx Environment version should cmp >= "1.10.3"
@@ -752,11 +724,11 @@ The third control uses the `file` resource. The first 2 tests use `should` to ve
 Run `inspec exec` on the target.
 
 ```
-$ inspec exec /root/my_nginx -t ssh://root:password@target
+$ inspec exec /root/my_nginx -t ssh://TARGET_USERNAME:TARGET_PASSWORD@TARGET_IP
 
   Profile: InSpec Profile (my_nginx)
   Version: 0.1.0
-  Target:  ssh://root@target:22
+  Target:  ssh://TARGET_USERNAME@TARGET_IP:22
 
     ...
     ×  nginx-conf: NGINX configuration (1 failed)
@@ -829,6 +801,17 @@ One way to improve these tests is to use Attributes. Attributes enable you to se
 Profile Attributes exist in your profile's main directory within the `inspec.yml` for global Attributes to be used across your profile or in your `attributes` folder for custom Attributes. Start by creating this directory.
 
 ```Yaml
+name: my_nginx
+title: InSpec Profile
+maintainer: The Authors
+copyright: The Authors
+copyright_email: you@example.com
+license: Apache-2.0
+summary: An InSpec Compliance Profile
+version: 0.1.0
+supports:
+  platform: os
+  
 attributes:
   - name: user
     type: string
@@ -868,7 +851,7 @@ control 'system-users' do
 end
 ```
 
-For sensitive data it is recomended to use a secrets YAML file located on the local machine to populate the values of attributes. A secrets file will always overwrite a attributes default value. To use the secrets file run inspec exec and specify the path to that Yaml file using the --attrs attribute.
+For sensitive data it is recommended to use a secrets YAML file located on the local machine to populate the values of attributes. A secrets file will always overwrite a attributes default value. To use the secrets file run inspec exec and specify the path to that Yaml file using the --attrs attribute.
 
 ---
 For example, a inspec.yml:
@@ -905,17 +888,6 @@ end
 ```
 
 ---
-And a YAML file named profile-attribute.yml:
-
-```YAML
-username: bob
-password: secret
-```
-
-The following command runs the tests and applies the secrets specified in profile-attribute.yml:
-
-`inspec exec examples/profile-attribute --attrs examples/profile-attribute.yml`
-
 To change your attributes for platform specific cases you can setup multiple --attrs files.
 
 ---
@@ -970,20 +942,18 @@ $ inspec exec examples/profile-attribute --attrs examples/linux.yml
 
 ---
 ### Running baseline straight from Github/Chef Supermarket
-# TODO: Update connections in this section to reflect virtualbox images
-
 In this module, we use NGINX for learning purposes. If you're interested in NGINX specifically, you may be interested in the [DevSec Nginx Baseline](https://supermarket.chef.io/tools/nginx-baseline) profile on Chef Supermarket. This profile implements many of the tests you wrote in this module.
 
 To execute this profile on your target system, run this `inspec supermarket exec` command.
 
 ---
 ```
-$ inspec supermarket exec dev-sec/nginx-baseline -t ssh://root:password@target
+$ inspec supermarket exec dev-sec/nginx-baseline -t ssh://TARGET_USERNAME:TARGET_PASSWORD@TARGET_IP
   [2018-05-03T03:07:51+00:00] WARN: URL target https://github.com/dev-sec/nginx-baseline transformed to https://github.com/dev-sec/nginx-baseline/archive/master.tar.gz. Consider using the git fetcher
 
   Profile: DevSec Nginx Baseline (nginx-baseline)
   Version: 2.1.0
-  Target:  ssh://root@target:22
+  Target:  ssh://TARGET_USERNAME@TARGET_IP:22
 
     ...
     ×  nginx-02: Check NGINX config file owner, group and permissions. (1 failed)
@@ -1008,9 +978,11 @@ You may want to extend the `nginx-baseline` with your own custom requirements. T
 
 ---
 ## Analyze Results
-# TODO: Update this section to run reporter on above example of nginx
 
 InSpec allows you to output your test results to one or more reporters. You can configure the reporter(s) using either the --json-config option or the --reporter option. While you can configure multiple reporters to write to different files, only one reporter can output to the screen(stdout).
+```
+$ inspec exec /root/my_nginx -t ssh://TARGET_USERNAME:TARGET_PASSWORD@TARGET_IP --reporter cli json:baseline_output.json
+```
 
 ### Syntax
 
@@ -1020,50 +992,35 @@ You can specify one or more reporters using the --reporter cli flag. You can als
 Output json to screen.
 
 ```
-inspec exec example_profile --reporter json
+inspec exec /root/my_nginx --reporter json
 or
-inspec exec example_profile --reporter json:-
+inspec exec /root/my_nginx --reporter json:-
 ```
 
 Output yaml to screen
 
 ```
-inspec exec example_profile --reporter yaml
+inspec exec /root/my_nginx --reporter yaml
 or
-inspec exec example_profile --reporter yaml:-
+inspec exec /root/my_nginx --reporter yaml:-
 ```
 
 Output cli to screen and write json to a file.
 
-`inspec exec example_profile --reporter cli json:/tmp/output.json`
+`inspec exec /root/my_nginx --reporter cli json:/tmp/output.json`
 
 ---
 Output nothing to screen and write junit and html to a file.
 
-`inspec exec example_profile --reporter junit:/tmp/junit.xml html:www/index.html`
+`inspec exec /root/my_nginx --reporter junit:/tmp/junit.xml html:www/index.html`
 
 Output json to screen and write to a file. Write junit to a file.
 
-`inspec exec example_profile --reporter json junit:/tmp/junit.xml | tee out.json`
+`inspec exec /root/my_nginx --reporter json junit:/tmp/junit.xml | tee out.json`
 
 If you wish to pass the profiles directly after specifying the reporters you will need to use the end of options flag --.
 
 `inspec exec --reporter json junit:/tmp/junit.xml -- profile1 profile2`
-
-If you are using the cli option --json-config you can also set reporters.
-
----
-Output cli to screen.
-
-```json
-{
-    "reporter": {
-        "cli" : {
-            "stdout" : true
-        }
-    }
-}
-```
 
 ---
 Output cli to screen and write json to a file.
@@ -1087,34 +1044,17 @@ Output cli to screen and write json to a file.
 
 The following are the current supported reporters:
 
-cli
-This is the basic text base report. It includes details about which tests passed and failed and includes an overall summary at the end.
+* cli
+* json
+* json-min
+* yaml
+* documentation
+* junit
+* progress
+* json-rspec
+* html
 
-json
-This reporter includes all information about the profiles and test results in standard json format.
-
-json-min
-This reporter is a redacted version of the json and only includes test results.
-
----
-yaml
-This reporter includes all information about the profiles and test results in standard yaml format.
-
-documentation
-This reporter is a very minimal text base report. It shows you which tests passed by name and has a small summary at the end.
-
-junit
-This reporter outputs the standard junit spec in xml format.
-
-progress
-This reporter is very condensed and gives you a .(pass), f(fail), or *(skip) character per test and a small summary at the end.
-
----
-json-rspec
-This reporter includes all information from the rspec runner. Unlike the json reporter this includes rspec specific details.
-
-html
-This renders html code to view your tests in a browser. It includes all the test and summary information.
+You can read more about [InSpec Reporters](https://www.inspec.io/docs/reference/reporters/) on the documentation page.
 
 ---
 ## Automation Tools
@@ -1136,113 +1076,78 @@ This will allow you to view the InSpec results in the Heimdall viewer.
 ---
 ## Create basic profile
 ### Download CIS Here
-ADD CIS DOWNLOAD LINK
+[CIS Benchmark Download]()
 
 ---
-### Example Control V-13621
-Let's take a look at how we would write a the InSpec control for V-13621:
+### Example Control V-38437
+Let's take a look at how we would write a the InSpec control for V-38437:
 ```ruby
-NGINX_DISALLOWED_FILE_LIST = attribute(
-  'nginx_disallowed_file_list',
-  description: 'File list of  documentation, sample code, example applications, and tutorials.',
-  default: ["/usr/share/man/man8/nginx.8.gz"]
-)
+control "V-38437" do
+  title "Automated file system mounting tools must not be enabled unless
+needed."
+  desc  "All filesystems that are required for the successful operation of the
+system should be explicitly listed in \"/etc/fstab\" by an administrator. New
+filesystems should not be arbitrarily introduced via the automounter.
+    The \"autofs\" daemon mounts and unmounts filesystems, such as user home
+directories shared via NFS, on demand. In addition, autofs can be used to
+handle removable media, and the default configuration provides the cdrom device
+as \"/misc/cd\". However, this method of providing access to removable media is
+not common, so autofs can almost always be disabled if NFS is not in use. Even
+if NFS is required, it is almost always possible to configure filesystem mounts
+statically by editing \"/etc/fstab\" rather than relying on the automounter.
+  "
+  impact 0.3
+  tag "gtitle": "SRG-OS-999999"
+  tag "gid": "V-38437"
+  tag "rid": "SV-50237r1_rule"
+  tag "stig_id": "RHEL-06-000526"
+  tag "fix_id": "F-43381r1_fix"
+  tag "cci": ["CCI-000366"]
+  tag "nist": ["CM-6 b", "Rev_4"]
+  tag "false_negatives": nil
+  tag "false_positives": nil
+  tag "documentable": false
+  tag "mitigations": nil
+  tag "severity_override_guidance": false
+  tag "potential_impacts": nil
+  tag "third_party_tools": nil
+  tag "mitigation_controls": nil
+  tag "responsibility": nil
+  tag "ia_controls": nil
+  tag "check": "To verify the \"autofs\" service is disabled, run the following
+command:
+chkconfig --list autofs
+If properly configured, the output should be the following:
+autofs 0:off 1:off 2:off 3:off 4:off 5:off 6:off
+Verify the \"autofs\" service is not running:
+# service autofs status
+If the autofs service is enabled or running, this is a finding."
+  tag "fix": "If the \"autofs\" service is not needed to dynamically mount NFS
+filesystems or removable media, disable the service for all runlevels:
+# chkconfig --level 0123456 autofs off
+Stop the service if it is already running:
+# service autofs stop"
 
-NGINX_EXCEPTION_FILES = attribute(
-  'nginx_allowed_file_list',
-  description: 'File list of allowed documentation, sample code, example applications, and tutorials.',
-  default: [
-           ]
-)
-
-NGINX_OWNER = attribute(
-  'nginx_owner',
-  description: "The Nginx owner",
-  default: 'nginx'
-)
-
-SYS_ADMIN = attribute(
-  'sys_admin',
-  description: "The system adminstrator",
-  default: ['root']
-)
-
-NGINX_GROUP = attribute(
-  'nginx_group',
-  description: "The Nginx group",
-  default: 'nginx'
-)
-
-SYS_ADMIN_GROUP = attribute(
-  'sys_admin_group',
-  description: "The system adminstrator group",
-  default: ['root']
-)
-
-only_if do
-  package('nginx').installed? || command('nginx').exist?
-end
-
-control "V-13621" do
-
-  title "All web server documentation, sample code, example applications, and
-  tutorials must be removed from a production web server."
-
-  desc "Web server documentation, sample code, example applications, and
-  tutorials may be an exploitable threat to a web server. A production web
-  server may only contain components that are operationally necessary (e.g.,
-  compiled code, scripts, web-content, etc.). Delete all directories that
-  contain samples and any scripts used to execute the samples. If there is a
-  requirement to maintain these directories at the site on non-production
-  servers for training purposes, have permissions set to only allow access to
-  authorized users (i.e., web administrators and systems administrators).
-  Sample applications or scripts have not been evaluated and approved for use
-  and may introduce vulnerabilities to the system."
-
-  impact 0.7
-  tag "severity": "high"
-  tag "gtitle": "WG385"
-  tag "gid": "V-13621"
-  tag "rid": "SV-32933r1_rule"
-  tag "stig_id": "WG385 A22"
-  tag "nist": ["CM-6", "Rev_4"]
-
-  tag "check": "Query the SA to determine if all directories that contain
-  samples and any scripts used to execute the samples have been removed from
-  the server. Each web server has its own list of sample files. This may
-  change with the software versions, but the following are some examples of
-  what to look for (This should not be the definitive list of sample files,
-  but only an example of the common samples that are provided with the
-  associated web server. This list will be updated as additional information
-  is discovered.):
-  ls -Ll /usr/share/man/man8/nginx.8.gz
-  If there is a requirement to maintain these directories at the site for
-  training or other such purposes, have permissions or set the permissions to
-  only allow access to authorized users. If any sample files are found on the
-  web server, this is a finding."
-
-  begin
-
-    authorized_sa_user_list = SYS_ADMIN.clone << NGINX_OWNER
-    authorized_sa_group_list = SYS_ADMIN_GROUP.clone << NGINX_GROUP
-
-    NGINX_DISALLOWED_FILE_LIST.each do |file|
-      describe file(file) do
-        it { should_not exist }
-      end
-    end
-
-    NGINX_EXCEPTION_FILES.each do |file|
-      describe file(file) do
-        its('owner') { should be_in authorized_sa_user_list }
-        its('group') { should be_in authorized_sa_group_list }
-        its('mode') { should cmp '640' }
-      end
-    end
-  rescue Exception => msg
-    describe "Exception: #{msg}" do
-      it { should be_nil }
-    end
+  describe service("autofs").runlevels(/0/) do
+    it { should_not be_enabled }
+  end
+  describe service("autofs").runlevels(/1/) do
+    it { should_not be_enabled }
+  end
+  describe service("autofs").runlevels(/2/) do
+    it { should_not be_enabled }
+  end
+  describe service("autofs").runlevels(/3/) do
+    it { should_not be_enabled }
+  end
+  describe service("autofs").runlevels(/4/) do
+    it { should_not be_enabled }
+  end
+  describe service("autofs").runlevels(/5/) do
+    it { should_not be_enabled }
+  end
+  describe service("autofs").runlevels(/6/) do
+    it { should_not be_enabled }
   end
 end
 ```
