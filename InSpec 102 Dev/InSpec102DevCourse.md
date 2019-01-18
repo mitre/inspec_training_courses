@@ -68,23 +68,61 @@ InSpec operates with most orchestration and CM tools found in the DevOps pipelin
 ### Download VirtualBox Here
 [https://www.virtualbox.org/wiki/Downloads](https://www.virtualbox.org/wiki/Downloads)
 
-### Download VirtualBox Template Here
-[VirtualBox Template Download]()
+### Download Vagrant Here
+[https://www.vagrantup.com/downloads.html](https://www.vagrantup.com/downloads.html)
+
+### Clone Repo Here 
+[https://github.com/mitre/inspec_training_courses](https://github.com/mitre/inspec_training_courses)
 
 ---
 ### Setup Environments
-Start by creating a working directory. We recommend ~/learn-inspec.
+Start by creating a working directory. We recommend ~/learn-inspec.  
 `mkdir ~/learn-inspec`
 
-Next, move to your working directory.
+Next, move to your working directory.  
 `cd ~/learn-inspec`
 
+#### Run Vagrant to install the Virtual Environment
+Navigate to the `InSpec 102 Dev` folder and run the following command:  
+`$ vagrant up`
+
+Wait for vagrant to finish standing up the virtual environments.
+
+#### Setup network for VirtualBox
+Open VirtualBox and shut down the 3 vm's that were created `workstation`, `target`, `target-centos6`.
+
+Open Preference settings for VirtualBox (**not** the settings for the VM's) and go to the network tab. From there click the + symbol to add a new NatNetwork. Once you do that your preferences should look like this below:
+![Alt text](../images/Create_NatNetwork.png?raw=true "Create NatNetwork")
+
+Click ok to save the settings.
+
+The following step you will repeat for the 3 vm's `workstation`, `target`, `target-centos6`.
+ - Select the virtual machine
+ - Click on settings for the virtual machine
+ - Navigate to the network tab
+ - For `Attached to:` Select `NatNetwork`
+ - For `Name` make sure the same NatNetwork is selected for all the virtual machines
+ - Click on Advanced dropdown and For `Promiscuous Mode:` make sure to select `Allow VMs`
+ - Once more click ok to confirm and save the settings
+
+![Alt text](../images/NatNetwork_VM_Setup.png?raw=true "NatNetwork VM Setup")
+
+Once the above operations are completed you can startup up the `workstation` and `target` vm's since we will start with those.
+
+Workstation Credentials:  
+u: vagrant  
+p: vagrant
+
+Target Credentials:  
+u: root  
+p: password
+
 ---
-The workstation can connect to the target by the target's name, target. Run curl target and you see that NGINX is running.
+The workstation can connect to the target by the target's ip, perform an `ifconfig` on the target to get it's ip. Run curl TARGET_IP and you see that NGINX is running.
 
 ---
 ```
-$ curl target
+$ curl TARGET_IP
 
 <!DOCTYPE html>
 <html>

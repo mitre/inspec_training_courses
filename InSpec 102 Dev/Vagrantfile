@@ -1,0 +1,30 @@
+nodes = [
+  { :hostname => 'workstation', :box => 'ubuntu/xenial64' },
+  { :hostname => 'target', :box => 'minimal/xenial64' },
+  { :hostname => 'target-centos6', :box => 'bento/centos-6' },
+]
+
+Vagrant.configure("2") do |config|
+  nodes.each do |node|
+    config.vm.define node[:hostname] do |nodeconfig|
+      nodeconfig.vm.box = node[:box]
+      nodeconfig.vm.hostname = node[:hostname]
+
+      memory = node[:ram] ? node[:ram] : 2048;
+      nodeconfig.vm.provider :virtualbox do |vb|
+        vb.name = node[:hostname]
+        vb.customize [
+          "modifyvm", :id,
+          "--cpuexecutioncap", "50",
+          "--memory", memory.to_s,
+          "--clipboard", "bidirectional",
+          "--draganddrop", "bidirectional",
+        ]
+      end
+
+      nodeconfig.vm.provision :chef_solo do |chef|
+        chef.add_recipe node[:hostname]
+      end
+    end
+  end
+end
