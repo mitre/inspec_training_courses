@@ -203,8 +203,8 @@ Target Credentials:
 u: root  
 p: password
 
-Target-Centos6:
-u: vagrant
+Target-Centos6:  
+u: vagrant  
 p: vagrant
 
 ---
