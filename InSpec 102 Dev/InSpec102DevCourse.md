@@ -31,12 +31,12 @@ Don't fixate on the tools used, nor the specific use cases we develop in the cou
 
 
 ---
-# 4. Table of contents
+# 4. Table of Contents
 <!--ts-->
    * [1. InSpec Developer Course 102](#1-inspec-developer-course-102)
    * [2. Author](#2-author)
    * [3. Thank you to](#3-thank-you-to)
-   * [4. Table of contents](#4-table-of-contents)
+   * [4. Table of Contents](#4-table-of-contents)
    * [5. About InSpec](#5-about-inspec)
       * [5.1. Orchestration, Configuration Management, Validation to Deployment](#51-orchestration-configuration-management-validation-to-deployment)
       * [5.2. Automating Security Validation Using InSpec](#52-automating-security-validation-using-inspec)
@@ -75,8 +75,8 @@ Don't fixate on the tools used, nor the specific use cases we develop in the cou
       * [10.1. Syntax](#101-syntax)
       * [10.2. Supported Reporters](#102-supported-reporters)
    * [11. Automation Tools](#11-automation-tools)
-   * [12. Create basic profile](#12-create-basic-profile)
-      * [12.1. Download STIG Here](#121-download-stig-here)
+   * [12. Create basic profile - DAY 2](#12-create-basic-profile---day-2)
+      * [12.1. Download STIG Requirements Here](#121-download-stig-requirements-here)
       * [12.2. Example Control V-38437](#122-example-control-v-38437)
 
 <!-- Added by: melsharkawi, at:  -->
@@ -1207,9 +1207,14 @@ Navigate to your json output file that you saved from your previous step and sel
 This will allow you to view the InSpec results in the Heimdall viewer.
 
 ---
-# 12. Create basic profile
-## 12.1. Download STIG Here
-[RHEL6 STIG Download]()
+# 12. Create basic profile - DAY 2
+## 12.1. Download STIG Requirements Here
+Download the latest STIG Viewer located here [STIG Viewer](https://iase.disa.mil/stigs/pages/stig-viewing-guidance.aspx)
+![Alt text](../images/Download_STIG_Viewer.png?raw=true "STIG Viewer Download")
+
+
+Download the `Red Hat 6 STIG - Ver 1, Rel 21` located here [RHEL6 STIG Download](https://iase.disa.mil/stigs/Pages/a-z.aspx)
+![Alt text](../images/Download_STIG.png?raw=true "RHEL6 STIG Download")
 
 ---
 ## 12.2. Example Control V-38437
