@@ -48,7 +48,7 @@ Don't fixate on the tools used, nor the specific use cases we develop in the cou
          * [6.3.2. Pass](#632-pass)
          * [6.3.3. Multiple Controls](#633-multiple-controls)
       * [6.4. Tooling and Reporting](#64-tooling-and-reporting)
-   * [7. Course Environment Setup](#7-environment-setup)
+   * [7. Course Environment Setup](#7-course-environment-setup)
       * [7.1. Download VirtualBox Here](#71-download-virtualbox-here)
       * [7.2. Download Vagrant Here](#72-download-vagrant-here)
       * [7.3. Clone or Download Repo Here](#73-clone-or-download-repo-here)
