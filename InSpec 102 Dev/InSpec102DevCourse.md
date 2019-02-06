@@ -51,7 +51,7 @@ Don't fixate on the tools used, nor the specific use cases we develop in the cou
    * [7. Course Environment Setup](#7-course-environment-setup)
       * [7.1. Download and Install VirtualBox](#71-download-and-install-virtualbox)
       * [7.2. Download and Install Vagrant](#72-download-and-install-vagrant)
-      * [7.3. Clone or Download/Unzip This Course Repository](#73-clone-or-download/unzip-this-course-repository)
+      * [7.3. Clone or Download-Unzip This Course Repository](#73-clone-or-download-unzip-this-course-repository)
       * [7.4. Setup Environments](#74-setup-environments)
          * [7.4.1. Run Vagrant to install the Virtual Environment](#741-run-vagrant-to-install-the-virtual-environment)
          * [7.4.2 Setup network for VirtualBox](#742-setup-network-for-virtualbox)
@@ -138,7 +138,7 @@ InSpec operates with most orchestration and CM tools found in the DevOps pipelin
 ## 7.2. Download and Install Vagrant
 [https://www.vagrantup.com/downloads.html](https://www.vagrantup.com/downloads.html)
 
-## 7.3. Clone or Download/Unzip This Course Repository
+## 7.3. Clone or Download-Unzip This Course Repository
 [https://github.com/mitre/inspec_training_courses](https://github.com/mitre/inspec_training_courses)
 
 ---
