@@ -78,6 +78,13 @@ Don't fixate on the tools used, nor the specific use cases we develop in the cou
    * [12. Create basic profile - DAY 2](#12-create-basic-profile---day-2)
       * [12.1. Download STIG Requirements Here](#121-download-stig-requirements-here)
       * [12.2. Example Control V-38437](#122-example-control-v-38437)
+   * [13. Using what you've learned](#13-using-what-youve-learned)
+   * [14. Cleanup Environments](#14-cleanup-environments)
+   * [15. Additional Resources](#15-additional-resources)
+      * [15.1 Security Guidance](#151-security-guidance)
+      * [15.2 InSpec Documentation](#152-inspec-documentation)
+      * [15.3 Additional Tutorials](#153-additional-tutorials)
+      * [15.4 MITRE InSpec](#154-mitre-inspec)
 
 <!-- Added by: melsharkawi, at:  -->
 
