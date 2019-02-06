@@ -235,7 +235,7 @@ $ curl TARGET_IP
 ```
 
 ---
-# 8. Creating an InSpec profile
+# 8. Studying an InSpec profile
 Let's start by creating a profile that will contain NGINX tests.
 
 Start by moving to the /root directory.
