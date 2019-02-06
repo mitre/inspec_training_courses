@@ -10,7 +10,7 @@ Vagrant.configure("2") do |config|
       nodeconfig.vm.box = node[:box]
       nodeconfig.vm.hostname = node[:hostname]
 
-      memory = node[:ram] ? node[:ram] : 2048;
+      memory = node[:ram] ? node[:ram] : 1024;
       nodeconfig.vm.provider :virtualbox do |vb|
         vb.name = node[:hostname]
         vb.customize [
