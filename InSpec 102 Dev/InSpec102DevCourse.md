@@ -63,7 +63,7 @@ Don't fixate on the tools used, nor the specific use cases we develop in the cou
          * [8.3.2 it](#832-it)
          * [8.3.3. should](#833-should)
          * [8.3.4. be_directory](#834-be_directory)
-   * [9. Exploring the InSpec Shell function](#9-exploring-the-inspec-shell)
+   * [9. Exploring the InSpec Shell](#9-exploring-the-inspec-shell)
       * [9.1. Enter the shell](#91-enter-the-shell)
       * [9.2. Explore the file resource](#92-explore-the-file-resource)
       * [9.3. Explore the nginx resource](#93-explore-the-nginx-resource)
