@@ -1308,11 +1308,11 @@ Now you should be able to
 -	Report results
 
 You can contribute to existing profiles that can be found here:
-[https://github.com/mitre](https://github.com/mitre)
+[https://github.com/mitre](https://github.com/mitre)  
 
 Otherwise you can create your own profiles if they don't exist using the following security guidelines:
-[https://iase.disa.mil/stigs/Pages/a-z.aspx](https://iase.disa.mil/stigs/Pages/a-z.aspx)
-[https://www.cisecurity.org/cis-benchmarks/](https://www.cisecurity.org/cis-benchmarks/)
+[https://iase.disa.mil/stigs/Pages/a-z.aspx](https://iase.disa.mil/stigs/Pages/a-z.aspx)  
+[https://www.cisecurity.org/cis-benchmarks/](https://www.cisecurity.org/cis-benchmarks/)  
 
 # 14. Cleanup Environments
 If you're done with your vagrant boxes, run the following command to destroy them:
@@ -1321,22 +1321,22 @@ If you're done with your vagrant boxes, run the following command to destroy the
 # 15. Additional Resources
 
 ## 15.1 Security Guidance
-[https://iase.disa.mil/stigs/Pages/a-z.aspx](https://iase.disa.mil/stigs/Pages/a-z.aspx)
-[https://www.cisecurity.org/cis-benchmarks/](https://www.cisecurity.org/cis-benchmarks/)
+[https://iase.disa.mil/stigs/Pages/a-z.aspx](https://iase.disa.mil/stigs/Pages/a-z.aspx)  
+[https://www.cisecurity.org/cis-benchmarks/](https://www.cisecurity.org/cis-benchmarks/)  
 
 ## 15.2 InSpec Documentation
-[InSpec Docs](https://www.inspec.io/docs/)
-[InSpec Profiles](https://www.inspec.io/docs/reference/profiles/)
-[InSpec Resources](https://www.inspec.io/docs/reference/resources/)
-[InSpec Matchers](https://www.inspec.io/docs/reference/matchers/)
-[InSpec Shell](https://www.inspec.io/docs/reference/shell/)
-[InSpec Reporters](https://www.inspec.io/docs/reference/reporters/)
+[InSpec Docs](https://www.inspec.io/docs/)  
+[InSpec Profiles](https://www.inspec.io/docs/reference/profiles/)  
+[InSpec Resources](https://www.inspec.io/docs/reference/resources/)  
+[InSpec Matchers](https://www.inspec.io/docs/reference/matchers/)  
+[InSpec Shell](https://www.inspec.io/docs/reference/shell/)  
+[InSpec Reporters](https://www.inspec.io/docs/reference/reporters/)  
 
 ## 15.3 Additional Tutorials
-[What to Expect When You’re InSpec’ing](https://blog.chef.io/2018/04/03/what-to-expect-when-youre-inspecing/)
-[Getting started with InSpec - The InSpec basics series](http://www.anniehedgie.com/inspec/)
-[Windows infrastructure testing using InSpec – Part I](http://datatomix.com/?p=236)
-[Windows infrastructure testing using InSpec and Profiles – Part II](http://datatomix.com/?p=238)
+[What to Expect When You’re InSpec’ing](https://blog.chef.io/2018/04/03/what-to-expect-when-youre-inspecing/)  
+[Getting started with InSpec - The InSpec basics series](http://www.anniehedgie.com/inspec/)  
+[Windows infrastructure testing using InSpec – Part I](http://datatomix.com/?p=236)  
+[Windows infrastructure testing using InSpec and Profiles – Part II](http://datatomix.com/?p=238)  
 
 ## 15.4 MITRE InSpec
-[MITRE InSpec Repositories](https://github.com/orgs/mitre/teams/inspec/repositories)
+[MITRE InSpec Repositories](https://github.com/orgs/mitre/teams/inspec/repositories)  
