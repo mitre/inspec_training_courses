@@ -55,7 +55,7 @@ Don't fixate on the tools used, nor the specific use cases we develop in the cou
       * [7.4. Setup Environments](#74-setup-environments)
          * [7.4.1. Run Vagrant to install the Virtual Environment](#741-run-vagrant-to-install-the-virtual-environment)
          * [7.4.2 Setup network for VirtualBox](#742-setup-network-for-virtualbox)
-   * [8. Studying an InSpec profile](#8-creating-inspec-profile)
+   * [8. Studying an InSpec profile](#8-studying-an-inspec-profile)
       * [8.1. Understanding the profile structure](#81-understanding-the-profile-structure)
       * [8.2. Understand a control's structure](#82-understand-a-controls-structure)
       * [8.3. Understand a describe block's structure](#83-understand-a-describe-blocks-structure)
@@ -63,18 +63,18 @@ Don't fixate on the tools used, nor the specific use cases we develop in the cou
          * [8.3.2 it](#832-it)
          * [8.3.3. should](#833-should)
          * [8.3.4. be_directory](#834-be_directory)
-   * [9. Exploring the InSpec Shell function](#9-inspec-shell)
+   * [9. Exploring the InSpec Shell function](#9-exploring-the-inspec-shell)
       * [9.1. Enter the shell](#91-enter-the-shell)
       * [9.2. Explore the file resource](#92-explore-the-file-resource)
       * [9.3. Explore the nginx resource](#93-explore-the-nginx-resource)
       * [9.4. Write the InSpec controls](#94-write-the-inspec-controls)
       * [9.5. Refactor the code to use Attributes](#95-refactor-the-code-to-use-attributes)
       * [9.6. Running baseline straight from Github/Chef Supermarket](#96-running-baseline-straight-from-githubchef-supermarket)
-   * [10. Viewing and Analyzing Results](#10-analyze-results)
+   * [10. Viewing and Analyzing Results](#10-viewing-and-analyzing-results)
       * [10.1. Syntax](#101-syntax)
       * [10.2. Supported Reporters](#102-supported-reporters)
    * [11. Automation Tools](#11-automation-tools)
-   * [12. DAY 2 - Creating a basic profile](#12-create-basic-profile---day-2)
+   * [12. DAY 2 - Creating a basic profile](#12-day-2---creating-a-basic-profile)
       * [12.1. Download STIG Requirements Here](#121-download-stig-requirements-here)
       * [12.2. Example Control V-38437](#122-example-control-v-38437)
 
@@ -144,10 +144,10 @@ InSpec operates with most orchestration and CM tools found in the DevOps pipelin
 ---
 ## 7.4. Setup Environments
 Start by creating a working directory. We recommend ~/learn-inspec.  
-`mkdir ~/learn-inspec`  [or from Windows cmd prompt: mkdir Desktop/learn-inspec]
+`mkdir ~/learn-inspec`  [or from Windows cmd prompt: `mkdir Desktop/learn-inspec`]
 
 Next, move to your working directory.  
-`cd ~/learn-inspec`  [or from Windows cmd prompt: cd Desktop/learn-inspec]
+`cd ~/learn-inspec`  [or from Windows cmd prompt: `cd Desktop/learn-inspec`]
 
 ### 7.4.1. Run Vagrant to install the Virtual Environment
 Navigate to the `InSpec 102 Dev` folder and run the following command:  
