@@ -6,13 +6,13 @@
 
 A hands-on InSpec developer course.
 
-This course will
-- Effectively use InSpec tool as well as learn how it can transform compliance and security requirements into code.
-- Consume and overlay existing InSpec validation profiles to validate an application stack.
-- Setup up an environment to use InSpec and learn how to validate hosts, containers and cloud platforms such as AWS and Azure.
-- Analyze and translate InSpec results and review them in human readable viewers such as MITRE tool `Heimdall` .
-- Develop new InSpec profiles and tailor existing ones to meet unique validation requirements.
-- Learn to write effective InSpec Domain Specific Language tests that are robust and produce meaningful reports.
+This course will enable you to
+-	Describe the InSpec framework and its capabilities
+-	Describe the architecture of an InSpec profile   
+-	Build an InSpec profile to transform security policy into automated security testing
+-	Run an InSpec profile against a component of an application stack
+-	View and analyze InSpec results
+-	Report results
 
 
 We will be spending most of the course hands-on working with the tools and in the Unix command line, so as to grow an understanding of how InSpec actually works.
@@ -159,9 +159,9 @@ Wait for vagrant to finish standing up the virtual environments.
 ### 7.4.2 Setup network for VirtualBox
 Open VirtualBox and shut down the 3 vm's that were created `workstation`, `target`, `target-centos6`.
 
-Open Preference settings for VirtualBox (**not** the settings for the VM's) 
-- Go to the network tab 
-- From there click the + symbol to add a new NatNetwork 
+Open Preference settings for VirtualBox (**not** the settings for the VM's)
+- Go to the network tab
+- From there click the + symbol to add a new NatNetwork
 - Once you do that your preferences should look like this below:
 ![Alt text](../images/Create_NatNetwork.png?raw=true "Create NatNetwork")
 
@@ -1289,3 +1289,47 @@ Stop the service if it is already running:
   end
 end
 ```
+
+# 13. Using what you've learned
+
+Now you should be able to
+-	Describe the InSpec framework and its capabilities
+-	Describe the architecture of an InSpec profile   
+-	Build an InSpec profile to transform security policy into automated security testing
+-	Run an InSpec profile against a component of an application stack
+-	View and analyze InSpec results
+-	Report results
+
+You can contribute to existing profiles that can be found here:
+[https://github.com/mitre](https://github.com/mitre)
+
+Otherwise you can create your own profiles if they don't exist using the following security guidelines:
+[https://iase.disa.mil/stigs/Pages/a-z.aspx](https://iase.disa.mil/stigs/Pages/a-z.aspx)
+[https://www.cisecurity.org/cis-benchmarks/](https://www.cisecurity.org/cis-benchmarks/)
+
+# 14. Cleanup Environments
+If you're done with your vagrant boxes, run the following command to destroy them:
+`vagrant destroy -f`
+
+# 15. Additional Resources
+
+## 15.1 Security Guidance
+[https://iase.disa.mil/stigs/Pages/a-z.aspx](https://iase.disa.mil/stigs/Pages/a-z.aspx)
+[https://www.cisecurity.org/cis-benchmarks/](https://www.cisecurity.org/cis-benchmarks/)
+
+## 15.2 InSpec Documentation
+[InSpec Docs](https://www.inspec.io/docs/)
+[InSpec Profiles](https://www.inspec.io/docs/reference/profiles/)
+[InSpec Resources](https://www.inspec.io/docs/reference/resources/)
+[InSpec Matchers](https://www.inspec.io/docs/reference/matchers/)
+[InSpec Shell](https://www.inspec.io/docs/reference/shell/)
+[InSpec Reporters](https://www.inspec.io/docs/reference/reporters/)
+
+## 15.3 Additional Tutorials
+[What to Expect When You’re InSpec’ing](https://blog.chef.io/2018/04/03/what-to-expect-when-youre-inspecing/)
+[Getting started with InSpec - The InSpec basics series](http://www.anniehedgie.com/inspec/)
+[Windows infrastructure testing using InSpec – Part I](http://datatomix.com/?p=236)
+[Windows infrastructure testing using InSpec and Profiles – Part II](http://datatomix.com/?p=238)
+
+## 15.4 MITRE InSpec
+[MITRE InSpec Repositories](https://github.com/orgs/mitre/teams/inspec/repositories)
