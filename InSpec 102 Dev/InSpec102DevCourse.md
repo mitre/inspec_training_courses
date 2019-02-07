@@ -6,7 +6,8 @@
 
 A hands-on InSpec developer course.
 
-After attending this course the student will be able to:
+After attending this course the student will be able to:  
+
 - Describe the InSpec framework and its capabilities
 - Describe the architecture of an InSpec profile   
 - Build an InSpec profile to transform security policy into automated security testing 
@@ -27,10 +28,10 @@ Don't fixate on the tools used, nor the specific use cases we develop in the cou
 
 - John Fitzpatrick, Thomas Petchel, Franklin Webber and InSpec.io for creating the original tutorial for Explore InSpec resources.
 - Rony Xavier, Aaron Lippold and Eugene Aronne for assisting me in maturing this InSpec training course.
-
-
 ---
+
 # 4. Table of Contents
+
 <!--ts-->
    * [1. InSpec Developer Course 102](#1-inspec-developer-course-102)
    * [2. Author](#2-author)
@@ -77,6 +78,13 @@ Don't fixate on the tools used, nor the specific use cases we develop in the cou
    * [12. DAY 2 - Creating a basic profile](#12-day-2---creating-a-basic-profile)
       * [12.1. Download STIG Requirements Here](#121-download-stig-requirements-here)
       * [12.2. Example Control V-38437](#122-example-control-v-38437)
+   * [13. Using what you've learned](#13-using-what-youve-learned)
+   * [14. Cleanup Environments](#14-cleanup-environments)
+   * [15. Additional Resources](#15-additional-resources)
+      * [15.1 Security Guidance](#151-security-guidance)
+      * [15.2 InSpec Documentation](#152-inspec-documentation)
+      * [15.3 Additional Tutorials](#153-additional-tutorials)
+      * [15.4 MITRE InSpec](#154-mitre-inspec)
 
 <!-- Added by: melsharkawi, at:  -->
 
@@ -158,9 +166,9 @@ Wait for vagrant to finish standing up the virtual environments.
 ### 7.4.2. Setup network in VirtualBox
 Open VirtualBox and shut down the 3 vm's that were created `workstation`, `target`, `target-centos6`.
 
-Open Preference settings for VirtualBox (**not** the settings for the VM's) 
-- Go to the network tab 
-- From there click the + symbol to add a new NatNetwork 
+Open Preference settings for VirtualBox (**not** the settings for the VM's)
+- Go to the network tab
+- From there click the + symbol to add a new NatNetwork
 - Once you do that your preferences should look like this below:
 ![Alt text](../images/Create_NatNetwork.png?raw=true "Create NatNetwork")
 
@@ -1288,3 +1296,47 @@ Stop the service if it is already running:
   end
 end
 ```
+
+# 13. Using what you've learned
+
+Now you should be able to
+-	Describe the InSpec framework and its capabilities
+-	Describe the architecture of an InSpec profile   
+-	Build an InSpec profile to transform security policy into automated security testing
+-	Run an InSpec profile against a component of an application stack
+-	View and analyze InSpec results
+-	Report results
+
+You can contribute to existing profiles that can be found here:
+[https://github.com/mitre](https://github.com/mitre)  
+
+Otherwise you can create your own profiles if they don't exist using the following security guidelines:
+[https://iase.disa.mil/stigs/Pages/a-z.aspx](https://iase.disa.mil/stigs/Pages/a-z.aspx)  
+[https://www.cisecurity.org/cis-benchmarks/](https://www.cisecurity.org/cis-benchmarks/)  
+
+# 14. Cleanup Environments
+If you're done with your vagrant boxes, run the following command to destroy them:
+`vagrant destroy -f`
+
+# 15. Additional Resources
+
+## 15.1 Security Guidance
+[https://iase.disa.mil/stigs/Pages/a-z.aspx](https://iase.disa.mil/stigs/Pages/a-z.aspx)  
+[https://www.cisecurity.org/cis-benchmarks/](https://www.cisecurity.org/cis-benchmarks/)  
+
+## 15.2 InSpec Documentation
+[InSpec Docs](https://www.inspec.io/docs/)  
+[InSpec Profiles](https://www.inspec.io/docs/reference/profiles/)  
+[InSpec Resources](https://www.inspec.io/docs/reference/resources/)  
+[InSpec Matchers](https://www.inspec.io/docs/reference/matchers/)  
+[InSpec Shell](https://www.inspec.io/docs/reference/shell/)  
+[InSpec Reporters](https://www.inspec.io/docs/reference/reporters/)  
+
+## 15.3 Additional Tutorials
+[What to Expect When You’re InSpec’ing](https://blog.chef.io/2018/04/03/what-to-expect-when-youre-inspecing/)  
+[Getting started with InSpec - The InSpec basics series](http://www.anniehedgie.com/inspec/)  
+[Windows infrastructure testing using InSpec – Part I](http://datatomix.com/?p=236)  
+[Windows infrastructure testing using InSpec and Profiles – Part II](http://datatomix.com/?p=238)  
+
+## 15.4 MITRE InSpec
+[MITRE InSpec Repositories](https://github.com/orgs/mitre/teams/inspec/repositories)  
