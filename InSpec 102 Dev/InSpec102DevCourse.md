@@ -6,14 +6,14 @@
 
 A hands-on InSpec developer course.
 
-This course will enable you to
--	Describe the InSpec framework and its capabilities
--	Describe the architecture of an InSpec profile   
--	Build an InSpec profile to transform security policy into automated security testing
--	Run an InSpec profile against a component of an application stack
--	View and analyze InSpec results
--	Report results
+After attending this course the student will be able to:  
 
+- Describe the InSpec framework and its capabilities
+- Describe the architecture of an InSpec profile   
+- Build an InSpec profile to transform security policy into automated security testing 
+- Run an InSpec profile against a component of an application stack
+- View and analyze InSpec results 
+- Report results
 
 We will be spending most of the course hands-on working with the tools and in the Unix command line, so as to grow an understanding of how InSpec actually works.
 
@@ -27,11 +27,11 @@ Don't fixate on the tools used, nor the specific use cases we develop in the cou
 # 3. Thank you to
 
 - John Fitzpatrick, Thomas Petchel, Franklin Webber and InSpec.io for creating the original tutorial for Explore InSpec resources.
-- Rony Xavier, Aaron Lippold and Eugene Aronne for assiting me mature the InSpec training course.
-
-
+- Rony Xavier, Aaron Lippold and Eugene Aronne for assisting me in maturing this InSpec training course.
 ---
+
 # 4. Table of Contents
+
 <!--ts-->
    * [1. InSpec Developer Course 102](#1-inspec-developer-course-102)
    * [2. Author](#2-author)
@@ -44,19 +44,19 @@ Don't fixate on the tools used, nor the specific use cases we develop in the cou
    * [6. Course Overview](#6-course-overview)
       * [6.1. InSpec Profile Structure](#61-inspec-profile-structure)
       * [6.2. InSpec Controls Structure](#62-inspec-controls-structure)
-      * [6.3 InSpec Results](#63-inspec-results)
+      * [6.3. InSpec Results](#63-inspec-results)
          * [6.3.1. Failure](#631-failure)
          * [6.3.2. Pass](#632-pass)
          * [6.3.3. Multiple Controls](#633-multiple-controls)
       * [6.4. Tooling and Reporting](#64-tooling-and-reporting)
-   * [7. Environment Setup](#7-environment-setup)
-      * [7.1. Download VirtualBox Here](#71-download-virtualbox-here)
-      * [7.2. Download Vagrant Here](#72-download-vagrant-here)
-      * [7.3. Clone or Download Repo Here](#73-clone-or-download-repo-here)
+   * [7. Course Environment Setup](#7-course-environment-setup)
+      * [7.1. Download and Install VirtualBox](#71-download-and-install-virtualbox)
+      * [7.2. Download and Install Vagrant](#72-download-and-install-vagrant)
+      * [7.3. Clone or Download-Unzip This Course Repository](#73-clone-or-download-unzip-this-course-repository)
       * [7.4. Setup Environments](#74-setup-environments)
          * [7.4.1. Run Vagrant to install the Virtual Environment](#741-run-vagrant-to-install-the-virtual-environment)
          * [7.4.2 Setup network for VirtualBox](#742-setup-network-for-virtualbox)
-   * [8. Creating InSpec profile](#8-creating-inspec-profile)
+   * [8. Studying an InSpec profile](#8-studying-an-inspec-profile)
       * [8.1. Understanding the profile structure](#81-understanding-the-profile-structure)
       * [8.2. Understand a control's structure](#82-understand-a-controls-structure)
       * [8.3. Understand a describe block's structure](#83-understand-a-describe-blocks-structure)
@@ -64,18 +64,18 @@ Don't fixate on the tools used, nor the specific use cases we develop in the cou
          * [8.3.2 it](#832-it)
          * [8.3.3. should](#833-should)
          * [8.3.4. be_directory](#834-be_directory)
-   * [9. InSpec Shell](#9-inspec-shell)
+   * [9. Exploring the InSpec Shell](#9-exploring-the-inspec-shell)
       * [9.1. Enter the shell](#91-enter-the-shell)
       * [9.2. Explore the file resource](#92-explore-the-file-resource)
       * [9.3. Explore the nginx resource](#93-explore-the-nginx-resource)
       * [9.4. Write the InSpec controls](#94-write-the-inspec-controls)
       * [9.5. Refactor the code to use Attributes](#95-refactor-the-code-to-use-attributes)
       * [9.6. Running baseline straight from Github/Chef Supermarket](#96-running-baseline-straight-from-githubchef-supermarket)
-   * [10. Analyze Results](#10-analyze-results)
+   * [10. Viewing and Analyzing Results](#10-viewing-and-analyzing-results)
       * [10.1. Syntax](#101-syntax)
       * [10.2. Supported Reporters](#102-supported-reporters)
    * [11. Automation Tools](#11-automation-tools)
-   * [12. Create basic profile - DAY 2](#12-create-basic-profile---day-2)
+   * [12. DAY 2 - Creating a basic profile](#12-day-2---creating-a-basic-profile)
       * [12.1. Download STIG Requirements Here](#121-download-stig-requirements-here)
       * [12.2. Example Control V-38437](#122-example-control-v-38437)
    * [13. Using what you've learned](#13-using-what-youve-learned)
@@ -122,7 +122,7 @@ InSpec operates with most orchestration and CM tools found in the DevOps pipelin
 ![Alt text](../images/Controls_Structure.png?raw=true "Controls Structure")
 
 ---
-## 6.3 InSpec Results
+## 6.3. InSpec Results
 ### 6.3.1. Failure
 ![Alt text](../images/InSpec_Failure.png?raw=true "InSpec Failure")
 
@@ -139,23 +139,23 @@ InSpec operates with most orchestration and CM tools found in the DevOps pipelin
 ![Alt text](../images/Tooling_Reporting.png?raw=true "Tooling Reporting")
 
 ---
-# 7. Environment Setup
-## 7.1. Download VirtualBox Here
+# 7. Course Environment Setup
+## 7.1. Download and Install VirtualBox
 [https://www.virtualbox.org/wiki/Downloads](https://www.virtualbox.org/wiki/Downloads)
 
-## 7.2. Download Vagrant Here
+## 7.2. Download and Install Vagrant
 [https://www.vagrantup.com/downloads.html](https://www.vagrantup.com/downloads.html)
 
-## 7.3. Clone or Download Repo Here
+## 7.3. Clone or Download-Unzip This Course Repository
 [https://github.com/mitre/inspec_training_courses](https://github.com/mitre/inspec_training_courses)
 
 ---
 ## 7.4. Setup Environments
 Start by creating a working directory. We recommend ~/learn-inspec.  
-`mkdir ~/learn-inspec`
+`mkdir ~/learn-inspec`  [or from Windows cmd prompt: `mkdir Desktop/learn-inspec`]
 
 Next, move to your working directory.  
-`cd ~/learn-inspec`
+`cd ~/learn-inspec`  [or from Windows cmd prompt: `cd Desktop/learn-inspec`]
 
 ### 7.4.1. Run Vagrant to install the Virtual Environment
 Navigate to the `InSpec 102 Dev` folder and run the following command:  
@@ -163,7 +163,7 @@ Navigate to the `InSpec 102 Dev` folder and run the following command:
 
 Wait for vagrant to finish standing up the virtual environments.
 
-### 7.4.2 Setup network for VirtualBox
+### 7.4.2. Setup network in VirtualBox
 Open VirtualBox and shut down the 3 vm's that were created `workstation`, `target`, `target-centos6`.
 
 Open Preference settings for VirtualBox (**not** the settings for the VM's)
@@ -243,7 +243,7 @@ $ curl TARGET_IP
 ```
 
 ---
-# 8. Creating InSpec profile
+# 8. Studying an InSpec profile
 Let's start by creating a profile that will contain NGINX tests.
 
 Start by moving to the /root directory.
@@ -359,12 +359,12 @@ end
 Because InSpec resembles human-readable language, you might read this test as "/tmp should be a directory." Let's break down each component.
 
 ---
-### 8.3.1 file
+### 8.3.1. file
 
 [file](https://www.inspec.io/docs/reference/resources/file/) is an InSpec [resource](https://www.inspec.io/docs/reference/resources/). If you're familiar with Chef, you know that a resource configures one part of the system. InSpec resources are similar. For example, the InSpec file resource tests for file attributes, including a file's owner, mode, and permissions. The example examines the /tmp directory.
 
 ---
-### 8.3.2 it
+### 8.3.2. it
 
 The `it` statement validates one of your resource's features. A `describe` block contains one or more `it` statements. `it` enables you to test the resource itself. You'll also see `its`, which describes some feature of the resource, such as its mode or owner. You'll see examples of both `it` and `its` shortly.
 
@@ -379,7 +379,7 @@ The `it` statement validates one of your resource's features. A `describe` block
 `be_directory` is an example of a [matcher](https://www.inspec.io/docs/reference/matchers/). A matcher compares a resource's actual value to its expected value. InSpec provides several predefined matchers. The `file` resource provides the `be_directory` matcher.
 
 ---
-# 9. InSpec Shell
+# 9. Exploring the InSpec Shell
 
 Before we test our NGINX configuration, let's plan which resources and matchers we'll need.
 
@@ -1117,7 +1117,7 @@ You see that many of the tests pass, while others fail and may require investiga
 You may want to extend the `nginx-baseline` with your own custom requirements. To do that, you might use what's called a _wrapper profile_. You can check out [Create a custom InSpec profile](https://learn.chef.io/modules/create-a-custom-profile#/) for a more complete example.
 
 ---
-# 10. Analyze Results
+# 10. Viewing and Analyzing Results
 
 InSpec allows you to output your test results to one or more reporters. You can configure the reporter(s) using either the --json-config option or the --reporter option. While you can configure multiple reporters to write to different files, only one reporter can output to the screen(stdout).
 ```
