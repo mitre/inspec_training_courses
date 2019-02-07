@@ -1,5 +1,5 @@
 nodes = [
-  { :hostname => 'workstation', :box => 'ubuntu/xenial64', :ram => 2048 },
+  { :hostname => 'workstation', :box => 'chenhan/ubuntu-mate-desktop-18.10', :ram => 2048 },
   { :hostname => 'target', :box => 'minimal/xenial64', :ram => 1024 },
   { :hostname => 'target-centos6', :box => 'bento/centos-6', :ram => 1024 },
 ]
