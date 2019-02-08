@@ -167,6 +167,12 @@ InSpec operates with most orchestration and CM tools found in the DevOps pipelin
 [https://github.com/mitre/inspec_training_courses](https://github.com/mitre/inspec_training_courses)
 
 ---
+<br/>
+<div align="right">
+    <b><a href="#4-table-of-contents">↥ back to top</a></b>
+</div>
+<br/>
+
 ## 7.4. Setup Environments
 Start by creating a working directory. We recommend ~/learn-inspec.  
 `mkdir ~/learn-inspec`  [or from Windows cmd prompt: `mkdir Desktop/learn-inspec`]
@@ -291,6 +297,12 @@ Create new profile at /root/my_nginx
 ```
 
 ---
+<br/>
+<div align="right">
+    <b><a href="#4-table-of-contents">↥ back to top</a></b>
+</div>
+<br/>
+
 ## 8.1. Understanding the profile structure
 
 Let's take a look at how the profile is structured. We'll start with how a profile's files are structured and then move to what makes up an InSpec control.
@@ -318,6 +330,12 @@ Here's the role of each component.
 * The `libraries` directory contains resource extensions. A resource extension enables you to [define your own resource types](https://www.inspec.io/docs/reference/dsl_resource/). You won't work with resource extensions in this module.
 
 ---
+<br/>
+<div align="right">
+    <b><a href="#4-table-of-contents">↥ back to top</a></b>
+</div>
+<br/>
+
 ## 8.2. Understand a control's structure
 
 Let's take a look at the default control file, `controls/example.rb`.
@@ -358,6 +376,12 @@ This example shows two tests. Both tests check for the existence of the `/tmp` d
 In Ruby, the `do` and `end` keywords define a [block](http://ruby-for-beginners.rubymonstas.org/blocks.html). An InSpec control always contains at least one `describe` block. However, a control can contain many `describe` blocks.
 
 ---
+<br/>
+<div align="right">
+    <b><a href="#4-table-of-contents">↥ back to top</a></b>
+</div>
+<br/>
+
 ## 8.3. Understand a describe block's structure
 
 As with many test frameworks, InSpec code resembles natural language. Here's the format of a describe block.
@@ -424,6 +448,12 @@ There's also [InSpec shell](https://www.inspec.io/docs/reference/shell/), which 
 You're not required to use InSpec shell to develop your profiles. Some users find the InSpec shell to be a useful way to get immediate feedback and explore what's available. You can also use InSpec shell to debug your profiles.
 
 ---
+<br/>
+<div align="right">
+    <b><a href="#4-table-of-contents">↥ back to top</a></b>
+</div>
+<br/>
+
 ## 9.1. Enter the shell
 
 Run `inspec shell` to enter the interactive session.
@@ -489,6 +519,12 @@ inspec> help resources
 You see `file` and other resources listed.
 
 ---
+<br/>
+<div align="right">
+    <b><a href="#4-table-of-contents">↥ back to top</a></b>
+</div>
+<br/>
+
 ## 9.2. Explore the file resource
 
 Earlier, you saw this `describe` block.
@@ -568,6 +604,12 @@ A predicate method typically returns a value that can be evaluated as true or fa
 ```
 
 ---
+<br/>
+<div align="right">
+    <b><a href="#4-table-of-contents">↥ back to top</a></b>
+</div>
+<br/>
+
 ## 9.3. Explore the nginx resource
 
 Now's a good time to define the requirements for our NGINX configuration. Let's say that you require:
@@ -751,6 +793,12 @@ inspec> exit
 ```
 
 ---
+<br/>
+<div align="right">
+    <b><a href="#4-table-of-contents">↥ back to top</a></b>
+</div>
+<br/>
+
 ## 9.4. Write the InSpec controls
 
 Now that you understand which methods map to each requirement, you're ready to write InSpec controls.
@@ -914,6 +962,12 @@ This time you see a failure. You discover that `/etc/nginx/nginx.conf` is potent
 Remember, the first step, detect, is where you identify where the problems are so that you can accurately assess risk and prioritize remediation actions. For the second step, correct, you can use Chef or some other continuous automation framework to correct compliance failures for you. You won't correct this issue in this module, but later you can check out the [Integrated Compliance with Chef](https://learn.chef.io/tracks/integrated-compliance#/) track to learn more about how to correct compliance issues using Chef.
 
 ---
+<br/>
+<div align="right">
+    <b><a href="#4-table-of-contents">↥ back to top</a></b>
+</div>
+<br/>
+
 ## 9.5. Refactor the code to use Attributes
 Your `my_nginx` profile is off to a great start. As your requirements evolve, you can add additional controls. You can also run this profile as often as you need to verify whether your systems remain in compliance.
 
@@ -1105,6 +1159,12 @@ $ inspec exec examples/profile-attribute --attrs examples/linux.yml
 ```
 
 ---
+<br/>
+<div align="right">
+    <b><a href="#4-table-of-contents">↥ back to top</a></b>
+</div>
+<br/>
+
 ## 9.6. Running baseline straight from Github/Chef Supermarket
 In this module, we use NGINX for learning purposes. If you're interested in NGINX specifically, you may be interested in the [MITRE nginx-baseline](https://github.com/mitre/nginx-baseline) profile on GitHub. Alternatively, you may also check out the [DevSec Nginx Baseline](https://supermarket.chef.io/tools/nginx-baseline) profile on Chef Supermarket. These profiles implements many of the tests you wrote in this module.
 
@@ -1158,6 +1218,12 @@ InSpec allows you to output your test results to one or more reporters. You can 
 ```
 $ inspec exec /root/my_nginx -t ssh://TARGET_USERNAME:TARGET_PASSWORD@TARGET_IP --reporter cli json:baseline_output.json
 ```
+
+<br/>
+<div align="right">
+    <b><a href="#4-table-of-contents">↥ back to top</a></b>
+</div>
+<br/>
 
 ## 10.1. Syntax
 
@@ -1215,6 +1281,12 @@ Output cli to screen and write json to a file.
 ```
 
 ---
+<br/>
+<div align="right">
+    <b><a href="#4-table-of-contents">↥ back to top</a></b>
+</div>
+<br/>
+
 ## 10.2. Supported Reporters
 
 The following are the current supported reporters:
@@ -1271,6 +1343,12 @@ Download the `Red Hat 6 STIG - Ver 1, Rel 21` located here [RHEL6 STIG Download]
 ![Alt text](../images/Download_STIG.png?raw=true "RHEL6 STIG Download")
 
 ---
+<br/>
+<div align="right">
+    <b><a href="#4-table-of-contents">↥ back to top</a></b>
+</div>
+<br/>
+
 ## 12.2. Example Control V-38437
 Let's take a look at how we would write a the InSpec control for V-38437:
 ```ruby
@@ -1360,7 +1438,7 @@ Now you should be able to
 -	View and analyze InSpec results
 -	Report results
 
-You can contribute to existing profiles that can be found here:
+You can contribute to existing profiles that can be found here:  
 [https://github.com/mitre](https://github.com/mitre)  
 
 Otherwise you can create your own profiles if they don't exist using the following security guidelines:
