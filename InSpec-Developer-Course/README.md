@@ -2,7 +2,7 @@
 <!-- $size: 16:9 -->
 <!-- page_number: true -->
 
-# 1. InSpec Developer Course 102
+# 1. InSpec Developer Course
 
 A hands-on InSpec developer course.
 
@@ -10,9 +10,9 @@ After attending this course the student will be able to:
 
 - Describe the InSpec framework and its capabilities
 - Describe the architecture of an InSpec profile   
-- Build an InSpec profile to transform security policy into automated security testing 
+- Build an InSpec profile to transform security policy into automated security testing
 - Run an InSpec profile against a component of an application stack
-- View and analyze InSpec results 
+- View and analyze InSpec results
 - Report results
 
 We will be spending most of the course hands-on working with the tools and in the Unix command line, so as to grow an understanding of how InSpec actually works.
@@ -33,7 +33,7 @@ Don't fixate on the tools used, nor the specific use cases we develop in the cou
 # 4. Table of Contents
 
 <!--ts-->
-   * [1. InSpec Developer Course 102](#1-inspec-developer-course-102)
+   * [1. InSpec Developer Course](#1-inspec-developer-course)
    * [2. Author](#2-author)
    * [3. Thank you to](#3-thank-you-to)
    * [4. Table of Contents](#4-table-of-contents)
@@ -55,13 +55,13 @@ Don't fixate on the tools used, nor the specific use cases we develop in the cou
       * [7.3. Clone or Download-Unzip This Course Repository](#73-clone-or-download-unzip-this-course-repository)
       * [7.4. Setup Environments](#74-setup-environments)
          * [7.4.1. Run Vagrant to install the Virtual Environment](#741-run-vagrant-to-install-the-virtual-environment)
-         * [7.4.2 Setup network for VirtualBox](#742-setup-network-for-virtualbox)
+         * [7.4.2. Setup network in VirtualBox](#742-setup-network-in-virtualbox)
    * [8. Studying an InSpec profile](#8-studying-an-inspec-profile)
       * [8.1. Understanding the profile structure](#81-understanding-the-profile-structure)
       * [8.2. Understand a control's structure](#82-understand-a-controls-structure)
       * [8.3. Understand a describe block's structure](#83-understand-a-describe-blocks-structure)
-         * [8.3.1 file](#831-file)
-         * [8.3.2 it](#832-it)
+         * [8.3.1. file](#831-file)
+         * [8.3.2. it](#832-it)
          * [8.3.3. should](#833-should)
          * [8.3.4. be_directory](#834-be_directory)
    * [9. Exploring the InSpec Shell](#9-exploring-the-inspec-shell)
@@ -75,7 +75,7 @@ Don't fixate on the tools used, nor the specific use cases we develop in the cou
       * [10.1. Syntax](#101-syntax)
       * [10.2. Supported Reporters](#102-supported-reporters)
    * [11. Automation Tools](#11-automation-tools)
-   * [12. DAY 2 - Creating a basic profile](#12-day-2---creating-a-basic-profile)
+   * [12. Create basic profile - DAY 2](#12-create-basic-profile---day-2)
       * [12.1. Download STIG Requirements Here](#121-download-stig-requirements-here)
       * [12.2. Example Control V-38437](#122-example-control-v-38437)
    * [13. Using what you've learned](#13-using-what-youve-learned)
@@ -90,8 +90,13 @@ Don't fixate on the tools used, nor the specific use cases we develop in the cou
 
 <!--te-->
 
----
-# 5. About InSpec
+<br/>
+<div align="right">
+    <b><a href="#4-table-of-contents">↥ back to top</a></b>
+</div>
+<br/>
+
+# 5. About InSpec 
 - InSpec is an open-source, community-developed  compliance validation framework
 - Provides a mechanism for defining machine-readable compliance and security requirements
 - Easy to create, validate, and read content
@@ -113,6 +118,12 @@ InSpec operates with most orchestration and CM tools found in the DevOps pipelin
 ![Alt text](../images/Processing_InSpec_Results.png?raw=true "Processing InSpec Results")
 
 ---
+<br/>
+<div align="right">
+    <b><a href="#4-table-of-contents">↥ back to top</a></b>
+</div>
+<br/>
+
 # 6. Course Overview
 ## 6.1. InSpec Profile Structure
 ![Alt text](../images/Profile_Structure.png?raw=true "Profile Structure")
@@ -139,6 +150,12 @@ InSpec operates with most orchestration and CM tools found in the DevOps pipelin
 ![Alt text](../images/Tooling_Reporting.png?raw=true "Tooling Reporting")
 
 ---
+<br/>
+<div align="right">
+    <b><a href="#4-table-of-contents">↥ back to top</a></b>
+</div>
+<br/>
+
 # 7. Course Environment Setup
 ## 7.1. Download and Install VirtualBox
 [https://www.virtualbox.org/wiki/Downloads](https://www.virtualbox.org/wiki/Downloads)
@@ -243,6 +260,12 @@ $ curl TARGET_IP
 ```
 
 ---
+<br/>
+<div align="right">
+    <b><a href="#4-table-of-contents">↥ back to top</a></b>
+</div>
+<br/>
+
 # 8. Studying an InSpec profile
 Let's start by creating a profile that will contain NGINX tests.
 
@@ -379,6 +402,12 @@ The `it` statement validates one of your resource's features. A `describe` block
 `be_directory` is an example of a [matcher](https://www.inspec.io/docs/reference/matchers/). A matcher compares a resource's actual value to its expected value. InSpec provides several predefined matchers. The `file` resource provides the `be_directory` matcher.
 
 ---
+<br/>
+<div align="right">
+    <b><a href="#4-table-of-contents">↥ back to top</a></b>
+</div>
+<br/>
+
 # 9. Exploring the InSpec Shell
 
 Before we test our NGINX configuration, let's plan which resources and matchers we'll need.
@@ -1117,6 +1146,12 @@ You see that many of the tests pass, while others fail and may require investiga
 You may want to extend the `nginx-baseline` with your own custom requirements. To do that, you might use what's called a _wrapper profile_. You can check out [Create a custom InSpec profile](https://learn.chef.io/modules/create-a-custom-profile#/) for a more complete example.
 
 ---
+<br/>
+<div align="right">
+    <b><a href="#4-table-of-contents">↥ back to top</a></b>
+</div>
+<br/>
+
 # 10. Viewing and Analyzing Results
 
 InSpec allows you to output your test results to one or more reporters. You can configure the reporter(s) using either the --json-config option or the --reporter option. While you can configure multiple reporters to write to different files, only one reporter can output to the screen(stdout).
@@ -1197,6 +1232,12 @@ The following are the current supported reporters:
 You can read more about [InSpec Reporters](https://www.inspec.io/docs/reference/reporters/) on the documentation page.
 
 ---
+<br/>
+<div align="right">
+    <b><a href="#4-table-of-contents">↥ back to top</a></b>
+</div>
+<br/>
+
 # 11. Automation Tools
 Navigate to the web page for [Heimdall Lite](https://mitre.github.io/heimdall-lite/)
 
@@ -1214,6 +1255,12 @@ Navigate to your json output file that you saved from your previous step and sel
 This will allow you to view the InSpec results in the Heimdall viewer.
 
 ---
+<br/>
+<div align="right">
+    <b><a href="#4-table-of-contents">↥ back to top</a></b>
+</div>
+<br/>
+
 # 12. Create basic profile - DAY 2
 ## 12.1. Download STIG Requirements Here
 Download the latest STIG Viewer located here [STIG Viewer](https://iase.disa.mil/stigs/pages/stig-viewing-guidance.aspx)
@@ -1297,6 +1344,12 @@ Stop the service if it is already running:
 end
 ```
 
+<br/>
+<div align="right">
+    <b><a href="#4-table-of-contents">↥ back to top</a></b>
+</div>
+<br/>
+
 # 13. Using what you've learned
 
 Now you should be able to
@@ -1314,9 +1367,21 @@ Otherwise you can create your own profiles if they don't exist using the followi
 [https://iase.disa.mil/stigs/Pages/a-z.aspx](https://iase.disa.mil/stigs/Pages/a-z.aspx)  
 [https://www.cisecurity.org/cis-benchmarks/](https://www.cisecurity.org/cis-benchmarks/)  
 
+<br/>
+<div align="right">
+    <b><a href="#4-table-of-contents">↥ back to top</a></b>
+</div>
+<br/>
+
 # 14. Cleanup Environments
 If you're done with your vagrant boxes, run the following command to destroy them:
 `vagrant destroy -f`
+
+<br/>
+<div align="right">
+    <b><a href="#4-table-of-contents">↥ back to top</a></b>
+</div>
+<br/>
 
 # 15. Additional Resources
 
