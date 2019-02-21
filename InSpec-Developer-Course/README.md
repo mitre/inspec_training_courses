@@ -70,6 +70,7 @@ Don't fixate on the tools used, nor the specific use cases we develop in the cou
       * [9.3. Explore the nginx resource](#93-explore-the-nginx-resource)
       * [9.4. Write the InSpec controls](#94-write-the-inspec-controls)
       * [9.5. Refactor the code to use Attributes](#95-refactor-the-code-to-use-attributes)
+         * [9.5.1. Multiple Attribute Example](#951-multiple-attribute-example)
       * [9.6. Running baseline straight from Github/Chef Supermarket](#96-running-baseline-straight-from-githubchef-supermarket)
    * [10. Viewing and Analyzing Results](#10-viewing-and-analyzing-results)
       * [10.1. Syntax](#101-syntax)
@@ -869,7 +870,7 @@ Modify your control file like this.
 
 control 'nginx-modules' do
   impact 1.0
-  title 'NGINX version'
+  title 'NGINX modules'
   desc 'The required NGINX modules should be installed.'
   describe nginx do
     its('modules') { should include 'http_ssl' }
@@ -986,7 +987,7 @@ end
 
 control 'nginx-modules' do
   impact 1.0
-  title 'NGINX version'
+  title 'NGINX modules'
   desc 'The required NGINX modules should be installed.'
   describe nginx do
     its('modules') { should include 'http_ssl' }
@@ -994,9 +995,7 @@ control 'nginx-modules' do
     its('modules') { should include 'mail_ssl' }
   end
 end
-```
----
-```ruby
+
 control 'nginx-conf' do
   impact 1.0
   title 'NGINX configuration'
@@ -1031,13 +1030,32 @@ supports:
   platform: os
 
 attributes:
-  - name: user
+  - name: nginx_version
     type: string
-    default: bob
+    default: 1.10.3
 ```
 
+To access an attribute you will use the attribute keyword. You can use this anywhere in your control code.
+
 ---
-Example of adding a array object of servers:
+For example:
+
+```ruby
+nginx_version = attribute('nginx_version')
+
+control 'nginx-version' do
+  impact 1.0
+  title 'NGINX version'
+  desc 'The required version of NGINX should be installed.'
+  describe nginx do
+    its('version') { should cmp >= nginx_version }
+  end
+end
+```
+
+For our next control we require specific modules
+
+Example of adding an array object of servers:
 
 
 ```YAML
@@ -1050,62 +1068,48 @@ attributes:
       - server3
 ```
 
-To access an attribute you will use the attribute keyword. You can use this anywhere in your control code.
-
----
-For example:
-
-```ruby
-current_user = attribute('user')
-
-control 'system-users' do
-  describe attribute('user') do
-    it { should eq 'bob' }
-  end
-
-  describe current_user do
-    it { should eq attribute('user') }
-  end
-end
-```
-
-For sensitive data it is recommended to use a secrets YAML file located on the local machine to populate the values of attributes. A secrets file will always overwrite a attributes default value. To use the secrets file run inspec exec and specify the path to that Yaml file using the --attrs attribute.
-
----
-For example, a inspec.yml:
-
+Similarly as the above example we can edit our `inspec.yml` file like this:
 ```YAML
+name: my_nginx
+title: InSpec Profile
+maintainer: The Authors
+copyright: The Authors
+copyright_email: you@example.com
+license: Apache-2.0
+summary: An InSpec Compliance Profile
+version: 0.1.0
+supports:
+  platform: os
+
 attributes:
-  - name: username
+  - name: nginx_version
     type: string
-    required: true
-  - name: password
-    type: string
-    required: true
+    default: 1.10.3
+    
+  - name: nginx_modules
+    type: array
+    default:
+      - http_ssl
+      - stream_ssl
+      - mail_ssl
 ```
 
----
-The control:
-
+Your control can be changed to look like this:
 ```ruby
-control 'system-users' do
-  impact 0.8
-  desc '
-    This test assures that the user "Bob" has a user installed on the system, along with a
-    specified password.
-  '
-
-  describe attribute('username') do
-    it { should eq 'bob' }
-  end
-
-  describe attribute('password') do
-    it { should eq 'secret' }
+control 'nginx-modules' do
+  impact 1.0
+  title 'NGINX modules'
+  desc 'The required NGINX modules should be installed.'
+  describe nginx do
+    attribute('nginx_modules').each do |module|
+      its('modules') { should include module }
+    end
   end
 end
 ```
 
----
+### 9.5.1. Multiple Attribute Example
+
 To change your attributes for platform specific cases you can setup multiple --attrs files.
 
 ---
@@ -1150,7 +1154,6 @@ control 'system-users' do
 end
 ```
 
----
 The following command runs the tests and applies the attributes specified:
 
 ```
