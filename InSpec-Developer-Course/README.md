@@ -1486,3 +1486,4 @@ If you're done with your vagrant boxes, run the following command to destroy the
 
 ## 15.4 MITRE InSpec
 [MITRE InSpec Repositories](https://github.com/orgs/mitre/teams/inspec/repositories)  
+[InSpec Tools](https://github.com/mitre/inspec_tools)
