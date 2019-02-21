@@ -28,7 +28,6 @@ Don't fixate on the tools used, nor the specific use cases we develop in the cou
 
 - John Fitzpatrick, Thomas Petchel, Franklin Webber and InSpec.io for creating the original tutorial for Explore InSpec resources.
 - Rony Xavier, Aaron Lippold and Eugene Aronne for assisting me in maturing this InSpec training course.
----
 
 # 4. Table of Contents
 
@@ -105,7 +104,6 @@ Don't fixate on the tools used, nor the specific use cases we develop in the cou
 - Agnostic to other DevOps tools and techniques
 - Integrates into multiple CM tools
 
----
 ## 5.1. Orchestration, Configuration Management, Validation to Deployment
 InSpec operates with most orchestration and CM tools found in the DevOps pipeline implementations
 ![Alt text](../images/InSpec_Orchestration.png?raw=true "InSpec Orchestration")
@@ -167,7 +165,6 @@ InSpec operates with most orchestration and CM tools found in the DevOps pipelin
 ## 7.3. Clone or Download-Unzip This Course Repository
 [https://github.com/mitre/inspec_training_courses](https://github.com/mitre/inspec_training_courses)
 
----
 <br/>
 <div align="right">
     <b><a href="#4-table-of-contents">↥ back to top</a></b>
@@ -226,6 +223,8 @@ The following step you will repeat for the 3 vm's `workstation`, `target`, `targ
 
 Once the above operations are completed you can startup up the `workstation` and `target` vm's since we will start with those.
 
+Vagrant Credentials
+---
 Workstation Credentials:  
 u: vagrant  
 p: vagrant
@@ -234,14 +233,21 @@ Target Credentials:
 u: root  
 p: password
 
-Target-Centos6:  
+Target-CentOS6:  
 u: vagrant  
 p: vagrant
+
+AWS Credentials
+---
+Target:  
+u: ubuntu
+
+Target-CentOS6:  
+u: ec2-user
 
 ---
 The workstation can connect to the target by the target's ip, perform an `ifconfig` on the target to get it's ip. Run curl TARGET_IP and you see that NGINX is running.
 
----
 ```
 $ curl TARGET_IP
 
@@ -266,7 +272,6 @@ $ curl TARGET_IP
 </html>
 ```
 
----
 <br/>
 <div align="right">
     <b><a href="#4-table-of-contents">↥ back to top</a></b>
@@ -286,7 +291,6 @@ Next, create an InSpec profile named my_nginx.
 
 The terminal output should look like the following:
 
----
 ```
 $ inspec init profile my_nginx
 Create new profile at /root/my_nginx
@@ -297,7 +301,6 @@ Create new profile at /root/my_nginx
  * Create file README.md
 ```
 
----
 <br/>
 <div align="right">
     <b><a href="#4-table-of-contents">↥ back to top</a></b>
@@ -322,7 +325,6 @@ $ tree my_nginx
       2 directories, 3 files
 ```
 
----
 Here's the role of each component.
 
 * `README.md` provides documentation about the profile, including what it covers and how to run it.
@@ -330,7 +332,6 @@ Here's the role of each component.
 * `inspec.yml` provides metadata, or information, about the profile. Metadata includes the profile's description, author, copyright, and version.
 * The `libraries` directory contains resource extensions. A resource extension enables you to [define your own resource types](https://www.inspec.io/docs/reference/dsl_resource/). You won't work with resource extensions in this module.
 
----
 <br/>
 <div align="right">
     <b><a href="#4-table-of-contents">↥ back to top</a></b>
@@ -341,7 +342,6 @@ Here's the role of each component.
 
 Let's take a look at the default control file, `controls/example.rb`.
 
----
 ```ruby
 # encoding: utf-8
 # copyright: 2018, The Authors
@@ -364,7 +364,6 @@ control 'tmp-1.0' do                        # A unique ID for this control
 end
 ```
 
----
 This example shows two tests. Both tests check for the existence of the `/tmp` directory. The second test provides additional information about the test. Let's break down each component.
 
 * `control` (line 12) is followed by the control's name. Each control in a profile has a unique name.
@@ -373,10 +372,8 @@ This example shows two tests. Both tests check for the existence of the `/tmp` d
 * `desc` (line 15) provides a more complete description of what the control checks for.
 * `describe` (lines 16 — 18) defines the test. Here, the test checks for the existence of the `/tmp` directory.
 
----
 In Ruby, the `do` and `end` keywords define a [block](http://ruby-for-beginners.rubymonstas.org/blocks.html). An InSpec control always contains at least one `describe` block. However, a control can contain many `describe` blocks.
 
----
 <br/>
 <div align="right">
     <b><a href="#4-table-of-contents">↥ back to top</a></b>
@@ -395,7 +392,6 @@ end
 
 An InSpec test has two main components: the subject to examine and the subject's expected state. Here, `<entity>` is the subject you want to examine, for example, a package name, service, file, or network port. The `<expectation>` part specifies the desired result or expected state, for example, that a port should be open (or perhaps should not be open.)
 
----
 Let's take a closer look at the `describe` block in the example.
 
 ```ruby
@@ -426,7 +422,6 @@ The `it` statement validates one of your resource's features. A `describe` block
 
 `be_directory` is an example of a [matcher](https://www.inspec.io/docs/reference/matchers/). A matcher compares a resource's actual value to its expected value. InSpec provides several predefined matchers. The `file` resource provides the `be_directory` matcher.
 
----
 <br/>
 <div align="right">
     <b><a href="#4-table-of-contents">↥ back to top</a></b>
@@ -443,12 +438,10 @@ When writing InSpec code, many resources are available to you.
 * You can [examine the source code](https://github.com/inspec/inspec) to see what's available. For example, you can see how file and other InSpec resources are implemented.
 * You can also use examples, such as profiles provided on [Chef Supermarket](https://supermarket.chef.io/tools-directory), as a guide.
 
----
 There's also [InSpec shell](https://www.inspec.io/docs/reference/shell/), which enables you to explore InSpec interactively. In this part, you'll use the InSpec shell to discover which resources you can use to test your NGINX configuration.
 
 You're not required to use InSpec shell to develop your profiles. Some users find the InSpec shell to be a useful way to get immediate feedback and explore what's available. You can also use InSpec shell to debug your profiles.
 
----
 <br/>
 <div align="right">
     <b><a href="#4-table-of-contents">↥ back to top</a></b>
@@ -472,7 +465,6 @@ You are currently running on:
     Arch:      x86_64
 ```
 
----
 Run `help` to see what commands are available.
 
 ```
@@ -496,7 +488,6 @@ inspec> help
 ...
 ```
 
----
 Run `help resources` to see which resources are available.
 
 ```
@@ -519,7 +510,6 @@ inspec> help resources
 
 You see `file` and other resources listed.
 
----
 <br/>
 <div align="right">
     <b><a href="#4-table-of-contents">↥ back to top</a></b>
@@ -540,7 +530,6 @@ Let's run a few commands from the InSpec shell to see how the `file` resource wo
 
 InSpec is built on the Ruby programming language. InSpec matchers are implemented as Ruby methods. Run this command to list which methods are available to the `file` resource.
 
----
 ```
 inspec> file('/tmp').class.superclass.instance_methods(false).sort
         => [:allowed?,
@@ -562,7 +551,6 @@ inspec> file('/tmp').class.superclass.instance_methods(false).sort
          :writable?]
 ```
 
----
 You can use the arrow or Page Up and Page Down keys to scroll through the list. When you're done, press `Q`.
 
 ```InSpec shell is based on a tool called pry. If you're not familiar with pry or other REPL tools, later you can check out pry to learn more.```
@@ -576,10 +564,8 @@ inspec> file('/tmp').directory?
 
 You see that the `/tmp` directory exists on your workstation container.
 
----
 InSpec transforms resource methods to matchers. For example, the `file.directory?` method becomes the `be_directory` matcher. The `file.readable?` method becomes the `be_readable` matcher.
 
----
 The InSpec shell understands the structure of blocks. This enables you to run mutiline code. As an example, run the entire `describe` block like this.
 
 ```
@@ -595,7 +581,6 @@ inspec> end
         Test Summary: 1 successful, 0 failures, 0 skipped
 ```
 
----
 In practice, you don't typically run controls interactively, but it's a great way to test out your ideas.
 
 ```
@@ -604,7 +589,6 @@ A Ruby method that ends in ?, such as directory? is known as a predicate method.
 A predicate method typically returns a value that can be evaluated as true or false. In Ruby, false and nil are false; everything else evaluates to true.
 ```
 
----
 <br/>
 <div align="right">
     <b><a href="#4-table-of-contents">↥ back to top</a></b>
@@ -628,7 +612,6 @@ Now's a good time to define the requirements for our NGINX configuration. Let's 
 ---
 Let's see what resources are available to help define these requirements as InSpec controls.
 
----
 Run `help resources` a second time. Notice InSpec provides two built-in resources to support NGINX – `nginx` and `nginx_conf`.
 
 ```
@@ -649,7 +632,6 @@ inspec> help resources
          - zfs_pool
 ```
 
----
 Run `nginx.methods`. You see the `version` and `modules` methods. You'll use these methods to define the first two requirements.
 
 ```
@@ -672,7 +654,6 @@ inspec> nginx.class.superclass.instance_methods(false).sort
          :version]
 ```
 
----
 Run `nginx.version` to see what result you get.
 
 ```
@@ -688,14 +669,12 @@ inspec> package('nginx').installed?
         => false
 ```
 
----
 Although you've discovered the methods you need – `version` and `modules` – let's run InSpec shell commands against the target that does have NGINX installed to see what results we find. To do so, first start by exiting your InSpec shell session.
 
 ```
 inspec> exit
 ```
 
----
 Run `inspec shell` a second time. This time, provide the `-t` argument to connect the shell session to the target container. This is similar to how you ran `inspec exec` in the [Try InSpec](https://learn.chef.io/modules/try-inspec#/step4.3) module to scan the target from the workstation.
 
 ```
@@ -711,7 +690,6 @@ $ inspec shell -t ssh://TARGET_USERNAME:TARGET_PASSWORD@TARGET_IP
       Arch:      x86_64
 ```
 
----
 Remember that the target does not have the InSpec CLI installed on it. Your shell session exists on the workstation container; InSpec routes commands to the target instance over SSH.
 
 Run the `package` resource a second time, this time on the target container.
@@ -728,7 +706,6 @@ inspec> nginx.version
         => "1.10.3"
 ```
 
----
 You see that version 1.10.3 is installed. To complete the example, run `nginx.modules` to list the installed NGINX modules.
 
 ```
@@ -750,7 +727,6 @@ inspec> nginx.modules
          "mail_ssl"]
 ```
 
----
 You see that the required modules, `http_ssl`, `stream_ssl`, and `mail_ssl`, are installed.
 
 The [nginx_conf](https://www.inspec.io/docs/reference/resources/nginx_conf/) resource examines the contents of the NGINX configuration file, `/etc/nginx/nginx.conf`.
@@ -759,7 +735,6 @@ Recall that the third requirement is to check whether the NGINX configuration fi
 
 You saw earlier how the `file` resource provides the `readable`, `writeable`, and `executable` methods. You would also see that the `file` resource provides the `owned_by` and `grouped_into` methods.
 
----
 ```
 inspec> file('/tmp').class.superclass.instance_methods(false).sort
         => [:allowed?,
@@ -784,7 +759,6 @@ inspec> file('/tmp').class.superclass.instance_methods(false).sort
          :writable?]
 ```
 
----
 These 5 `file` methods – `grouped_into`, `executable`, `owned_by`, `readable` and `writeable` – provide everything we need for the third requirement.
 
 Exit the InSpec shell session.
@@ -793,7 +767,6 @@ Exit the InSpec shell session.
 inspec> exit
 ```
 
----
 <br/>
 <div align="right">
     <b><a href="#4-table-of-contents">↥ back to top</a></b>
@@ -832,10 +805,8 @@ end
 
 The test has an impact of 1.0, meaning it is most critical. A failure might indicate to the team that this issue should be resolved as soon as possible, likely by upgrading NGINX to a newer version. The test compares `nginx.version` against version 1.10.3.
 
----
 `cmp` is one of InSpec's [built-in matchers](https://www.inspec.io/docs/reference/matchers/). `cmp` understands version numbers and can use the operators ==, <, <=, >=, and >. `cmp` compares versions by each segment, not as a string. For example, "7.4" is less than than "7.30".
 
----
 Next, run `inspec exec` to execute the profile on the remote target.
 
 ```
@@ -855,14 +826,12 @@ $ inspec exec /root/my_nginx -t ssh://TARGET_USERNAME:TARGET_PASSWORD@TARGET_IP
 
 You see that the test passes.
 
----
 The second requirement verifies that these modules are installed.
 
 * http_ssl
 * stream_ssl
 * mail_ssl
 
----
 Modify your control file like this.
 
 ```ruby
@@ -882,7 +851,6 @@ end
 
 The second control resembles the first; however, this version uses multiple `its` statements and the `nginx.modules` method. The `nginx.modules` method returns a list; the built-in `include` matcher verifies whether a value belongs to a given list.
 
----
 Run `inspec exec` on the target.
 
 ```
@@ -906,13 +874,11 @@ $ inspec exec /root/my_nginx -t ssh://TARGET_USERNAME:TARGET_PASSWORD@TARGET_IP
 
 This time, both controls pass.
 
----
 The third requirement verifies that the NGINX configuration file, `/etc/nginx/nginx.conf`:
 
 * is owned by the root user and group.
 * is not be readable, writeable, or executable by others.
 
----
 Modify your control file like this.
 
 ```ruby
@@ -933,7 +899,6 @@ end
 
 The third control uses the `file` resource. The first 2 tests use `should` to verify the `root` owner and group. The last 3 tests use `should_not` to verify that the file is not readable, writable, or executable by others.
 
----
 Run `inspec exec` on the target.
 
 ```
@@ -957,12 +922,10 @@ $ inspec exec /root/my_nginx -t ssh://TARGET_USERNAME:TARGET_PASSWORD@TARGET_IP
   Test Summary: 8 successful, 1 failure, 0 skipped
 ```
 
----
 This time you see a failure. You discover that `/etc/nginx/nginx.conf` is potentially readable by others. Because this control also has an impact of 1.0, your team may need to investigate further.
 
 Remember, the first step, detect, is where you identify where the problems are so that you can accurately assess risk and prioritize remediation actions. For the second step, correct, you can use Chef or some other continuous automation framework to correct compliance failures for you. You won't correct this issue in this module, but later you can check out the [Integrated Compliance with Chef](https://learn.chef.io/tracks/integrated-compliance#/) track to learn more about how to correct compliance issues using Chef.
 
----
 <br/>
 <div align="right">
     <b><a href="#4-table-of-contents">↥ back to top</a></b>
@@ -972,7 +935,6 @@ Remember, the first step, detect, is where you identify where the problems are s
 ## 9.5. Refactor the code to use Attributes
 Your `my_nginx` profile is off to a great start. As your requirements evolve, you can add additional controls. You can also run this profile as often as you need to verify whether your systems remain in compliance.
 
----
 Let's review the control file, `example.rb`.
 
 ```ruby
@@ -1012,7 +974,6 @@ end
 
 Although these rules do what you expect, imagine your control file contains dozens or hundreds of tests. As the data you check for, such as the version or which modules are installed, evolve, it can become tedious to locate and update your tests. You may also find that you repeat the same data in across multiple control files.
 
----
 One way to improve these tests is to use Attributes. Attributes enable you to separate the logic of your tests from the data your tests validate. Attribute files are typically expressed as a YAML file.
 
 Profile Attributes exist in your profile's main directory within the `inspec.yml` for global Attributes to be used across your profile or in your `attributes` folder for custom Attributes. Start by creating this directory.
@@ -1037,7 +998,6 @@ attributes:
 
 To access an attribute you will use the attribute keyword. You can use this anywhere in your control code.
 
----
 For example:
 
 ```ruby
@@ -1112,7 +1072,6 @@ end
 
 To change your attributes for platform specific cases you can setup multiple --attrs files.
 
----
 For example, a inspec.yml:
 
 ```YAML
@@ -1131,7 +1090,6 @@ users:
   - Randy
 ```
 
----
 A YAML file named linux.yml
 
 ```YAML
@@ -1161,7 +1119,6 @@ $ inspec exec examples/profile-attribute --attrs examples/windows.yml
 $ inspec exec examples/profile-attribute --attrs examples/linux.yml
 ```
 
----
 <br/>
 <div align="right">
     <b><a href="#4-table-of-contents">↥ back to top</a></b>
@@ -1178,7 +1135,6 @@ To execute the GitHub profile on your target system, run this `inspec exec` comm
 
 To execute the Chef Supermarket profile on your target system, run this `inspec supermarket exec` command.
 
----
 ```
 $ inspec supermarket exec dev-sec/nginx-baseline -t ssh://TARGET_USERNAME:TARGET_PASSWORD@TARGET_IP
   [2018-05-03T03:07:51+00:00] WARN: URL target https://github.com/dev-sec/nginx-baseline transformed to https://github.com/dev-sec/nginx-baseline/archive/master.tar.gz. Consider using the git fetcher
@@ -1203,12 +1159,10 @@ $ inspec supermarket exec dev-sec/nginx-baseline -t ssh://TARGET_USERNAME:TARGET
      Test Summary: 10 successful, 13 failures, 10 skipped
 ```
 
----
 You see that many of the tests pass, while others fail and may require investigation.
 
 You may want to extend the `nginx-baseline` with your own custom requirements. To do that, you might use what's called a _wrapper profile_. You can check out [Create a custom InSpec profile](https://learn.chef.io/modules/create-a-custom-profile#/) for a more complete example.
 
----
 <br/>
 <div align="right">
     <b><a href="#4-table-of-contents">↥ back to top</a></b>
@@ -1232,7 +1186,6 @@ $ inspec exec /root/my_nginx -t ssh://TARGET_USERNAME:TARGET_PASSWORD@TARGET_IP 
 
 You can specify one or more reporters using the --reporter cli flag. You can also specify a output by appending a path separated by a colon.
 
----
 Output json to screen.
 
 ```
@@ -1253,7 +1206,6 @@ Output cli to screen and write json to a file.
 
 `inspec exec /root/my_nginx --reporter cli json:/tmp/output.json`
 
----
 Output nothing to screen and write junit and html to a file.
 
 `inspec exec /root/my_nginx --reporter junit:/tmp/junit.xml html:www/index.html`
@@ -1266,7 +1218,6 @@ If you wish to pass the profiles directly after specifying the reporters you wil
 
 `inspec exec --reporter json junit:/tmp/junit.xml -- profile1 profile2`
 
----
 Output cli to screen and write json to a file.
 
 ```json
@@ -1283,7 +1234,6 @@ Output cli to screen and write json to a file.
 }
 ```
 
----
 <br/>
 <div align="right">
     <b><a href="#4-table-of-contents">↥ back to top</a></b>
@@ -1306,7 +1256,6 @@ The following are the current supported reporters:
 
 You can read more about [InSpec Reporters](https://www.inspec.io/docs/reference/reporters/) on the documentation page.
 
----
 <br/>
 <div align="right">
     <b><a href="#4-table-of-contents">↥ back to top</a></b>
@@ -1316,20 +1265,16 @@ You can read more about [InSpec Reporters](https://www.inspec.io/docs/reference/
 # 11. Automation Tools
 Navigate to the web page for [Heimdall Lite](https://mitre.github.io/heimdall-lite/)
 
----
 Click on the button `Load Json`
 ![Alt text](../images/Heimdall_Load.png?raw=true "Heimdall Load")
 
----
 Click on the button `Browse`
 ![Alt text](../images/Heimdall_Browse.png?raw=true "Heimdall Browse")
 
----
 Navigate to your json output file that you saved from your previous step and select that file then click open.
 
 This will allow you to view the InSpec results in the Heimdall viewer.
 
----
 <br/>
 <div align="right">
     <b><a href="#4-table-of-contents">↥ back to top</a></b>
@@ -1345,7 +1290,6 @@ Download the latest STIG Viewer located here [STIG Viewer](https://iase.disa.mil
 Download the `Red Hat 6 STIG - Ver 1, Rel 21` located here [RHEL6 STIG Download](https://iase.disa.mil/stigs/Pages/a-z.aspx)
 ![Alt text](../images/Download_STIG.png?raw=true "RHEL6 STIG Download")
 
----
 <br/>
 <div align="right">
     <b><a href="#4-table-of-contents">↥ back to top</a></b>
