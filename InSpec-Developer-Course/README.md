@@ -1265,6 +1265,12 @@ You can read more about [InSpec Reporters](https://www.inspec.io/docs/reference/
 </div>
 <br/>
 
+## 10.3. Putting it all together
+The following command will run the nginx baseline profile from github and use the reporter to output a json, you will need this for the next step loading it into heimdall:
+
+
+` $ inspec exec https://github.com/dev-sec/nginx-baseline -t ssh://TARGET_USERNAME:TARGET_PASSWORD@TARGET_IP --reporter cli json:baseline_output.json`
+
 # 11. Automation Tools
 Navigate to the web page for [Heimdall Lite](https://mitre.github.io/heimdall-lite/)
 
