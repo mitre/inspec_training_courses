@@ -1060,9 +1060,12 @@ control 'nginx-modules' do
   impact 1.0
   title 'NGINX modules'
   desc 'The required NGINX modules should be installed.'
+  
+  nginx_modules = attribute('nginx_modules')
+  
   describe nginx do
-    attribute('nginx_modules').each do |module|
-      its('modules') { should include module }
+    nginx_modules.each do |current_module|
+      its('modules') { should include current_module }
     end
   end
 end
