@@ -1389,7 +1389,7 @@ __Suggested Controls to start on:__
 __Suggested InSpec Resources to use:__
 - command
 - file
-- folder
+- directory
 - parse_config_file
 - kernel_module
 - package
