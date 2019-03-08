@@ -1377,6 +1377,27 @@ Stop the service if it is already running:
   end
 end
 ```
+## 12.3. Completed RHEL6 Profile for Reference
+
+__Suggested Controls to start on:__
+- V-38444
+- V-38451
+- V-38472
+- V-38473
+- V-38474
+
+__Suggested InSpec Resources to use:__
+- command
+- file
+- folder
+- parse_config_file
+- kernel_module
+- package
+
+## 12.4. Completed RHEL6 Profile for Reference
+
+Below is the url to the completed RHEL6 Inspec Profile for reference.  
+[red-hat-enterprise-linux-6-stig-baseline](https://github.com/mitre/red-hat-enterprise-linux-6-stig-baseline)
 
 <br/>
 <div align="right">
