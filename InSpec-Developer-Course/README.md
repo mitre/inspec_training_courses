@@ -1377,7 +1377,7 @@ Stop the service if it is already running:
   end
 end
 ```
-## 12.3. Completed RHEL6 Profile for Reference
+## 12.3. Getting Started on the RHEL6 baseline
 
 __Suggested Controls to start on:__
 - V-38444
