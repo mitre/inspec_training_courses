@@ -1,37 +1,7 @@
-<!-- $theme: gaia -->
-<!-- $size: 16:9 -->
-<!-- page_number: true -->
 
-# 1. InSpec Developer Course
+## InSpec Developer Course
 
-A hands-on InSpec developer course.
-
-After attending this course the student will be able to:  
-
-- Describe the InSpec framework and its capabilities
-- Describe the architecture of an InSpec profile   
-- Build an InSpec profile to transform security policy into automated security testing
-- Run an InSpec profile against a component of an application stack
-- View and analyze InSpec results
-- Report results
-
-We will be spending most of the course hands-on working with the tools and in the Unix command line, so as to grow an understanding of how InSpec actually works.
-
-Don't fixate on the tools used, nor the specific use cases we develop in the course, instead focus on learning the how and why.  How and why is far more important.  This course is not about tools although we'll be using them. You'll spend far more time writing code.  (Or at least cutting-and-pasting code.)
-
-# 2. Author
-
-- Aaron Lippold [alippold@mitre.org](mailto:alippold@mitre.org)
-- Mohamed El-Sharkawi [melsharkawi@mitre.org](mailto:melsharkawi@mitre.org)
-
-# 3. Thank you to
-
-- John Fitzpatrick, Thomas Petchel, Franklin Webber and InSpec.io for creating the original tutorial for Explore InSpec resources.
-- Rony Xavier, Aaron Lippold and Eugene Aronne for assisting me in maturing this InSpec training course.
-
-# 4. Table of Contents
-
-<!--ts-->
+<!--ts
    * [1. InSpec Developer Course](#1-inspec-developer-course)
    * [2. Author](#2-author)
    * [3. Thank you to](#3-thank-you-to)
@@ -95,13 +65,7 @@ Don't fixate on the tools used, nor the specific use cases we develop in the cou
 
 <!--te-->
 
-<br/>
-<div align="right">
-    <b><a href="#4-table-of-contents">↥ back to top</a></b>
-</div>
-<br/>
-
-# 5. About InSpec 
+# About InSpec 
 - InSpec is an open-source, community-developed  compliance validation framework
 - Provides a mechanism for defining machine-readable compliance and security requirements
 - Easy to create, validate, and read content
@@ -109,24 +73,17 @@ Don't fixate on the tools used, nor the specific use cases we develop in the cou
 - Agnostic to other DevOps tools and techniques
 - Integrates into multiple CM tools
 
-## 5.1. Orchestration, Configuration Management, Validation to Deployment
+## Orchestration, Configuration Management, Validation to Deployment
 InSpec operates with most orchestration and CM tools found in the DevOps pipeline implementations
 ![Alt text](../images/InSpec_Orchestration.png?raw=true "InSpec Orchestration")
 
 ---
-## 5.2. Automating Security Validation Using InSpec
+## Automating Security Validation Using InSpec
 ![Alt text](../images/Automating_Security_Validation.png?raw=true "Automating Security Validation")
 
 ---
 ## 5.3. Processing InSpec Results
 ![Alt text](../images/Processing_InSpec_Results.png?raw=true "Processing InSpec Results")
-
----
-<br/>
-<div align="right">
-    <b><a href="#4-table-of-contents">↥ back to top</a></b>
-</div>
-<br/>
 
 # 6. Course Overview
 ## 6.1. InSpec Profile Structure
@@ -228,6 +185,7 @@ The following step you will repeat for the 3 vm's `workstation`, `target`, `targ
 
 Once the above operations are completed you can startup up the `workstation` and `target` vm's since we will start with those.
 
+```shell
 Vagrant Credentials
 ---
 Workstation Credentials:  
@@ -249,11 +207,12 @@ u: ubuntu
 
 Target-CentOS6:  
 u: ec2-user
+```
 
 ---
 The workstation can connect to the target by the target's ip, perform an `ifconfig` on the target to get it's ip. Run curl TARGET_IP and you see that NGINX is running.
 
-```
+```html
 $ curl TARGET_IP
 
 <!DOCTYPE html>
@@ -288,15 +247,19 @@ Let's start by creating a profile that will contain NGINX tests.
 
 Start by moving to the /root directory.
 
-```$ cd ~```
+```shell
+$ cd ~
+```
 
 Next, create an InSpec profile named my_nginx.
 
-`inspec init profile my_nginx`
+```shell
+inspec init profile my_nginx
+```
 
 The terminal output should look like the following:
 
-```
+```shell
 $ inspec init profile my_nginx
 Create new profile at /root/my_nginx
  * Create directory controls
@@ -318,7 +281,7 @@ Let's take a look at how the profile is structured. We'll start with how a profi
 
 First, run `tree` to see what's in the `my_nginx` profile.
 
-```
+```shell
 $ tree my_nginx
       my_nginx
       ├── README.md
@@ -348,9 +311,6 @@ Here's the role of each component.
 Let's take a look at the default control file, `controls/example.rb`.
 
 ```ruby
-# encoding: utf-8
-# copyright: 2018, The Authors
-
 title 'sample section'
 
 # you can also use plain tests
@@ -368,6 +328,9 @@ control 'tmp-1.0' do                        # A unique ID for this control
   end
 end
 ```
+::: tip test
+this is a good tip
+:::
 
 This example shows two tests. Both tests check for the existence of the `/tmp` directory. The second test provides additional information about the test. Let's break down each component.
 
@@ -457,7 +420,7 @@ You're not required to use InSpec shell to develop your profiles. Some users fin
 
 Run `inspec shell` to enter the interactive session.
 
-```
+```shell
 $ inspec shell
 Welcome to the interactive InSpec Shell
 To find out how to use it, type: help
@@ -472,7 +435,7 @@ You are currently running on:
 
 Run `help` to see what commands are available.
 
-```
+```shell
 inspec> help
     You are currently running on:
 
@@ -495,7 +458,7 @@ inspec> help
 
 Run `help resources` to see which resources are available.
 
-```
+```shell
 inspec> help resources
          - aide_conf
          - apache
@@ -535,7 +498,7 @@ Let's run a few commands from the InSpec shell to see how the `file` resource wo
 
 InSpec is built on the Ruby programming language. InSpec matchers are implemented as Ruby methods. Run this command to list which methods are available to the `file` resource.
 
-```
+```shell
 inspec> file('/tmp').class.superclass.instance_methods(false).sort
         => [:allowed?,
          :basename,
@@ -558,11 +521,13 @@ inspec> file('/tmp').class.superclass.instance_methods(false).sort
 
 You can use the arrow or Page Up and Page Down keys to scroll through the list. When you're done, press `Q`.
 
-```InSpec shell is based on a tool called pry. If you're not familiar with pry or other REPL tools, later you can check out pry to learn more.```
+```shell
+InSpec shell is based on a tool called pry. If you're not familiar with pry or other REPL tools, later you can check out pry to learn more.
+```
 
 As an example, call the `file.directory?` method.
 
-```
+```shell
 inspec> file('/tmp').directory?
         => true
 ```
@@ -573,7 +538,7 @@ InSpec transforms resource methods to matchers. For example, the `file.directory
 
 The InSpec shell understands the structure of blocks. This enables you to run mutiline code. As an example, run the entire `describe` block like this.
 
-```
+```shell
 inspec> describe file('/tmp') do
 inspec>  it { should be_directory }
 inspec> end
@@ -588,7 +553,7 @@ inspec> end
 
 In practice, you don't typically run controls interactively, but it's a great way to test out your ideas.
 
-```
+```shell
 A Ruby method that ends in ?, such as directory? is known as a predicate method. The ? syntax is intended to make Ruby code easier to read.
 
 A predicate method typically returns a value that can be evaluated as true or false. In Ruby, false and nil are false; everything else evaluates to true.
