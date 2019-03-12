@@ -23,6 +23,7 @@ Don't fixate on the tools used, nor the specific use cases we develop in the cou
 
 - Aaron Lippold [alippold@mitre.org](mailto:alippold@mitre.org)
 - Mohamed El-Sharkawi [melsharkawi@mitre.org](mailto:melsharkawi@mitre.org)
+- Rony Xavier [rxavier@mitre.org](mailto:rxavier@mitre.org)
 
 # 3. Thank you to
 
@@ -78,18 +79,23 @@ Don't fixate on the tools used, nor the specific use cases we develop in the cou
       * [10.2. Supported Reporters](#102-supported-reporters)
       * [10.3. Putting it all together](#103-putting-it-all-together)
    * [11. Automation Tools](#11-automation-tools)
-   * [12. Create basic profile - DAY 2](#12-create-basic-profile---day-2)
-      * [12.1. Download STIG Requirements Here](#121-download-stig-requirements-here)
-      * [12.2. Example Control V-38437](#122-example-control-v-38437)
-      * [12.3. Getting Started on the RHEL6 baseline](#123-getting-started-on-the-rhel6-baseline)
-      * [12.4. Completed RHEL6 Profile for Reference](#124-completed-rhel6-profile-for-reference)
-   * [13. Using what you've learned](#13-using-what-youve-learned)
-   * [14. Cleanup Environments](#14-cleanup-environments)
-   * [15. Additional Resources](#15-additional-resources)
-      * [15.1 Security Guidance](#151-security-guidance)
-      * [15.2 InSpec Documentation](#152-inspec-documentation)
-      * [15.3 Additional Tutorials](#153-additional-tutorials)
-      * [15.4 MITRE InSpec](#154-mitre-inspec)
+   * [12. Additional InSpec tricks](#12-additional-inspec-tricks)
+      * [12.1. rspec Explicit Subject](#121-rspec-explicit-subject)
+      * [12.2. looping file structure](#122-looping-file-structure)
+   * [13. Create basic profile - DAY 2](#13-create-basic-profile---day-2)
+      * [13.1. Download STIG Requirements Here](#131-download-stig-requirements-here)
+      * [13.2. Example Control V-38437](#132-example-control-v-38437)
+      * [13.3. Getting Started on the RHEL6 baseline](#133-getting-started-on-the-rhel6-baseline)
+      * [13.4. Completed RHEL6 Profile for Reference](#134-completed-rhel6-profile-for-reference)
+   * [14. Using what you've learned](#14-using-what-youve-learned)
+   * [15. Cleanup Environments](#15-cleanup-environments)
+   * [16. Additional Resources](#16-additional-resources)
+      * [16.1. Security Guidance](#161-security-guidance)
+      * [16.2. InSpec Documentation](#162-inspec-documentation)
+      * [16.3. Additional Tutorials](#163-additional-tutorials)
+      * [16.4. MITRE InSpec](#164-mitre-inspec)
+      * [16.5. rspec documentation](#165-rspec-documentation)
+      * [16.6. Slack](#166-slack)
 
 <!-- Added by: melsharkawi, at:  -->
 
@@ -1295,8 +1301,37 @@ This will allow you to view the InSpec results in the Heimdall viewer.
 </div>
 <br/>
 
-# 12. Create basic profile - DAY 2
-## 12.1. Download STIG Requirements Here
+# 12. Additional InSpec tricks
+## 12.1. rspec Explicit Subject
+Here we have a inspec test that lists out it's current directory. Our original test code looks like this
+```ruby
+describe command('ls -al').stdout.strip do
+  it { should_not be_empty }
+end
+```
+
+If we would like to have a more Explicit Subject then we could refactor the code like this example
+```ruby
+describe "this is a detailed message" do
+  subject { command('ls -al').stdout.strip }
+  it 'more descriptive message' do
+    expect(subject).not_to be_empty
+  end
+end
+```
+
+## 12.2. looping file structure
+For looping through a file directory, the directory resource is not powerful enough to do that, so we are required to use the `command` resource and run a `find` or it's equivalent for your target OS. This can be very resource intensive on your target so try to be as specific as possible with your search such as the example below:
+```ruby
+command('find ~/* -type f -maxdepth 0 -xdev').stdout.split.each do |fname|
+  describe file(fname) do
+    its('owner') { should cmp 'ec2-user' }
+  end
+end
+```
+
+# 13. Create basic profile - DAY 2
+## 13.1. Download STIG Requirements Here
 Download the latest STIG Viewer located here [STIG Viewer](https://iase.disa.mil/stigs/pages/stig-viewing-guidance.aspx)
 ![Alt text](../images/Download_STIG_Viewer.png?raw=true "STIG Viewer Download")
 
@@ -1310,7 +1345,7 @@ Download the `Red Hat 6 STIG - Ver 1, Rel 21` located here [RHEL6 STIG Download]
 </div>
 <br/>
 
-## 12.2. Example Control V-38437
+## 13.2. Example Control V-38437
 Let's take a look at how we would write a the InSpec control for V-38437:
 ```ruby
 control "V-38437" do
@@ -1382,7 +1417,7 @@ Stop the service if it is already running:
   end
 end
 ```
-## 12.3. Getting Started on the RHEL6 baseline
+## 13.3. Getting Started on the RHEL6 baseline
 
 __Suggested Controls to start on:__
 - V-38444
@@ -1399,7 +1434,7 @@ __Suggested InSpec Resources to use:__
 - kernel_module
 - package
 
-## 12.4. Completed RHEL6 Profile for Reference
+## 13.4. Completed RHEL6 Profile for Reference
 
 Below is the url to the completed RHEL6 Inspec Profile for reference.  
 [red-hat-enterprise-linux-6-stig-baseline](https://github.com/mitre/red-hat-enterprise-linux-6-stig-baseline)
@@ -1410,7 +1445,7 @@ Below is the url to the completed RHEL6 Inspec Profile for reference.
 </div>
 <br/>
 
-# 13. Using what you've learned
+# 14. Using what you've learned
 
 Now you should be able to
 -	Describe the InSpec framework and its capabilities
@@ -1433,7 +1468,7 @@ Otherwise you can create your own profiles if they don't exist using the followi
 </div>
 <br/>
 
-# 14. Cleanup Environments
+# 15. Cleanup Environments
 If you're done with your vagrant boxes, run the following command to destroy them:
 `vagrant destroy -f`
 
@@ -1443,26 +1478,34 @@ If you're done with your vagrant boxes, run the following command to destroy the
 </div>
 <br/>
 
-# 15. Additional Resources
+# 16. Additional Resources
 
-## 15.1 Security Guidance
+## 16.1. Security Guidance
 [https://iase.disa.mil/stigs/Pages/a-z.aspx](https://iase.disa.mil/stigs/Pages/a-z.aspx)  
 [https://www.cisecurity.org/cis-benchmarks/](https://www.cisecurity.org/cis-benchmarks/)  
 
-## 15.2 InSpec Documentation
+## 16.2. InSpec Documentation
 [InSpec Docs](https://www.inspec.io/docs/)  
 [InSpec Profiles](https://www.inspec.io/docs/reference/profiles/)  
 [InSpec Resources](https://www.inspec.io/docs/reference/resources/)  
 [InSpec Matchers](https://www.inspec.io/docs/reference/matchers/)  
 [InSpec Shell](https://www.inspec.io/docs/reference/shell/)  
 [InSpec Reporters](https://www.inspec.io/docs/reference/reporters/)  
+[InSpec Profile Inheritance](https://blog.chef.io/2017/07/06/understanding-inspec-profile-inheritance/)
 
-## 15.3 Additional Tutorials
+## 16.3. Additional Tutorials
 [What to Expect When You’re InSpec’ing](https://blog.chef.io/2018/04/03/what-to-expect-when-youre-inspecing/)  
 [Getting started with InSpec - The InSpec basics series](http://www.anniehedgie.com/inspec/)  
 [Windows infrastructure testing using InSpec – Part I](http://datatomix.com/?p=236)  
 [Windows infrastructure testing using InSpec and Profiles – Part II](http://datatomix.com/?p=238)  
 
-## 15.4 MITRE InSpec
+## 16.4. MITRE InSpec
 [MITRE InSpec Repositories](https://github.com/orgs/mitre/teams/inspec/repositories)  
 [InSpec Tools](https://github.com/mitre/inspec_tools)
+[Heimdall Lite](https://mitre.github.io/heimdall-lite/#)
+
+## 16.5. rspec documentation
+[Explicit Subject](https://relishapp.com/rspec/rspec-core/docs/subject/explicit-subject)
+
+## 16.6. Slack
+[Chef Slack](http://community-slack.chef.io/)
