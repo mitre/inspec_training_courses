@@ -1501,11 +1501,13 @@ If you're done with your vagrant boxes, run the following command to destroy the
 
 ## 16.4. MITRE InSpec
 [MITRE InSpec Repositories](https://github.com/orgs/mitre/teams/inspec/repositories)  
-[InSpec Tools](https://github.com/mitre/inspec_tools)
+[InSpec Tools](https://github.com/mitre/inspec_tools)  
 [Heimdall Lite](https://mitre.github.io/heimdall-lite/#)
 
 ## 16.5. rspec documentation
-[Explicit Subject](https://relishapp.com/rspec/rspec-core/docs/subject/explicit-subject)
+[Explicit Subject](https://relishapp.com/rspec/rspec-core/docs/subject/explicit-subject)  
+[should and should_not](https://github.com/rspec/rspec-expectations/blob/master/Should.md)  
+[Built in matchers](https://relishapp.com/rspec/rspec-expectations/docs/built-in-matchers)
 
 ## 16.6. Slack
 [Chef Slack](http://community-slack.chef.io/)
