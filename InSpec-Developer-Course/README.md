@@ -257,30 +257,10 @@ Target-CentOS6:
 u: ec2-user
 
 ---
-The workstation can connect to the target by the target's ip, perform an `ifconfig` on the target to get it's ip. Run curl TARGET_IP and you see that NGINX is running.
+The workstation can connect to the target by the target's ip, perform an `ifconfig` on the target to get it's ip. Run ping TARGET_IP and you see that NGINX server is running.
 
 ```
-$ curl TARGET_IP
-
-<!DOCTYPE html>
-<html>
-<head>
-<title>Welcome to nginx!</title>
-<style>
-    body {
-        width: 35em;
-        margin: 0 auto;
-        font-family: Tahoma, Verdana, Arial, sans-serif;
-    }
-</style>
-</head>
-<body>
-<h1>Welcome to nginx!</h1>
-...
-...
-<p><em>Thank you for using nginx.</em></p>
-</body>
-</html>
+$ ping TARGET_IP
 ```
 
 <br/>
