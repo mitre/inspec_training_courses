@@ -1405,12 +1405,12 @@ __Suggested Controls to start on:__
 - V-38595
 
 __Suggested InSpec Resources to use:__
-- command
-- file
-- directory
-- parse_config_file
-- kernel_module
-- package
+- [command](https://www.inspec.io/docs/reference/resources/command/)
+- [file](https://www.inspec.io/docs/reference/resources/file/)
+- [directory](https://www.inspec.io/docs/reference/resources/directory/)
+- [parse_config_file](https://www.inspec.io/docs/reference/resources/parse_config_file/)
+- [kernel_module](https://www.inspec.io/docs/reference/resources/kernel_module/)
+- [package](https://www.inspec.io/docs/reference/resources/package/)
 
 ## 13.4. Completed RHEL6 Profile for Reference
 
