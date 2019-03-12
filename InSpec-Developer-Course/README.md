@@ -1397,12 +1397,17 @@ end
 ```
 ## 13.3. Getting Started on the RHEL6 baseline
 
-__Suggested Controls to start on:__
-- V-38444
+__Controls we will demo:__
 - V-38451
 - V-38472
 - V-38473
 - V-38595
+
+__Suggested Controls to start on:__
+- V-38450
+- V-38469
+- V-38456
+- V-38659
 
 __Suggested InSpec Resources to use:__
 - [command](https://www.inspec.io/docs/reference/resources/command/)
