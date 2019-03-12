@@ -1294,9 +1294,7 @@ If we would like to have a more Explicit Subject then we could refactor the code
 ```ruby
 describe "this is a detailed message" do
   subject { command('ls -al').stdout.strip }
-  it 'more descriptive message' do
-    expect(subject).not_to be_empty
-  end
+  it{ should_not be_empty } 
 end
 ```
 
