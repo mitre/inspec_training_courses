@@ -517,7 +517,7 @@ describe file('/tmp') do                  # The actual test
 end
 ```
 
-Let's run a few commands from the InSpec shell to see how the `file` resource works.
+Let's run a few commands from the InSpec shell to see how the [`file`](https://www.inspec.io/docs/reference/resources/file/) resource works.
 
 InSpec is built on the Ruby programming language. InSpec matchers are implemented as Ruby methods. Run this command to list which methods are available to the `file` resource.
 
@@ -603,7 +603,7 @@ Now's a good time to define the requirements for our NGINX configuration. Let's 
 ---
 Let's see what resources are available to help define these requirements as InSpec controls.
 
-Run `help resources` a second time. Notice InSpec provides two built-in resources to support NGINX – `nginx` and `nginx_conf`.
+Run `help resources` a second time. Notice InSpec provides two built-in resources to support NGINX – [`nginx`](https://www.inspec.io/docs/reference/resources/nginx/) and `nginx_conf`.
 
 ```
 inspec> help resources
@@ -967,7 +967,7 @@ Although these rules do what you expect, imagine your control file contains doze
 
 One way to improve these tests is to use Attributes. Attributes enable you to separate the logic of your tests from the data your tests validate. Attribute files are typically expressed as a YAML file.
 
-Profile Attributes exist in your profile's main directory within the `inspec.yml` for global Attributes to be used across your profile or in your `attributes` folder for custom Attributes. Start by creating this directory.
+[Profile Attributes](https://www.inspec.io/docs/reference/profiles/#profile-attributes) exist in your profile's main directory within the `inspec.yml` for global Attributes to be used across your profile or in your `attributes` folder for custom Attributes. Start by creating this directory.
 
 ```Yaml
 name: my_nginx
@@ -1165,7 +1165,7 @@ You may want to extend the `nginx-baseline` with your own custom requirements. T
 
 # 10. Viewing and Analyzing Results
 
-InSpec allows you to output your test results to one or more reporters. You can configure the reporter(s) using either the --json-config option or the --reporter option. While you can configure multiple reporters to write to different files, only one reporter can output to the screen(stdout).
+InSpec allows you to output your test results to one or more [reporters](https://www.inspec.io/docs/reference/reporters/). You can configure the reporter(s) using either the --json-config option or the --reporter option. While you can configure multiple reporters to write to different files, only one reporter can output to the screen(stdout).
 ```
 $ inspec exec /root/my_nginx -t ssh://TARGET_USERNAME:TARGET_PASSWORD@TARGET_IP --reporter cli json:baseline_output.json
 ```
@@ -1290,7 +1290,7 @@ describe command('ls -al').stdout.strip do
 end
 ```
 
-If we would like to have a more Explicit Subject then we could refactor the code like this example
+If we would like to have a more [Explicit Subject](https://relishapp.com/rspec/rspec-core/docs/subject/explicit-subject) then we could refactor the code like this example
 ```ruby
 describe "this is a detailed message" do
   subject { command('ls -al').stdout.strip }
