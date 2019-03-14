@@ -1404,11 +1404,19 @@ __Controls we will demo:__
 - V-38595
 - V-38599
 
-__Suggested Controls to start on:__
+__Suggested Controls to start on (Simple):__
 - V-38450
 - V-38469
 - V-38456
 - V-38659
+
+__Suggested Controls to start on (Hard):__
+- V-38446 <---parse config & command
+- V-38464 <---parse config file
+- V-38490 <---kernel module
+- V-38537 <---kernel parameter
+- V-38576 <---file content
+- V-38474 <---non applicable use case
 
 __Suggested InSpec Resources to use:__
 - [command](https://www.inspec.io/docs/reference/resources/command/)
