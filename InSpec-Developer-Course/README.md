@@ -1398,17 +1398,17 @@ end
 ## 13.3. Getting Started on the RHEL6 baseline
 
 __Controls we will demo:__
-- V-38451
-- V-38472
-- V-38473
-- V-38595
-- V-38599
+- V-38451 <---file resource
+- V-38472 <---directory looping & command resource
+- V-38473 <---mount resource
+- V-38595 <---manual test
+- V-38599 <---non applicable use case & package resource & command resource & parse config file resource
 
 __Suggested Controls to start on (Simple):__
-- V-38450
-- V-38469
-- V-38456
-- V-38659
+- V-38450 <---file resource
+- V-38469 <---directory looping & command resource
+- V-38456 <---mount resource
+- V-38659 <---manual test
 
 __Suggested Controls to start on (Hard):__
 - V-38446 <---parse config & command
