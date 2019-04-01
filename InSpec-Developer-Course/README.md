@@ -2,7 +2,7 @@
 # InSpec Developer Course
 
 
-## 1. About InSpec 
+## 1. About InSpec
 - InSpec is an open-source, community-developed  compliance validation framework
 - Provides a mechanism for defining machine-readable compliance and security requirements
 - Easy to create, validate, and read content
@@ -24,11 +24,61 @@ InSpec operates with most orchestration and CM tools found in the DevOps pipelin
 
 ## 2. Course Overview
 ### 2.1. InSpec Profile Structure
-![Alt text](../images/Profile_Structure.png?raw=true "Profile Structure")
-
+```bash
+$ tree nginx
+      nginx
+      └── profile
+          ├── README.md
+          ├── attributes.rb
+          ├── controls
+          │   ├── header_size.rb
+          │   └──  ssl_certification.rb
+          ├── inspec.yml
+          └── libraries
+              └── nginx_helper.rb
+```
 ---
 ### 2.2. InSpec Controls Structure
-![Alt text](../images/Controls_Structure.png?raw=true "Controls Structure")
+```ruby
+control "V-13727" do
+  title "The worker_processes StartServers directive must be set properly."
+
+  desc "These requirements are set to mitigate the effects of several types of
+  denial of service attacks. Although there is some latitude concerning the
+  settings themselves, the requirements attempt to provide reasonable limits
+  for the protection of the web server. If necessary, these limits can be
+  adjusted to accommodate the operational requirement of a given system."
+
+  impact 0.5
+  tag "severity": "medium"
+  tag "gtitle": "WA000-WWA026"
+  tag "gid": "V-13727"
+  tag "rid": "SV-36645r2_rule"
+  tag "stig_id": "WA000-WWA026 A22"
+  tag "nist": ["CM-6", "Rev_4"]
+
+  tag "check": "To view the worker_processes directive value enter the
+  following command:
+  grep ""worker_processes"" on the nginx.conf file and any separate included
+  configuration files
+  If the value of ""worker_processes"" is not set to auto or explicitly set,
+  this is a finding:
+  worker_processes   auto;
+  worker_processes defines the number of worker processes. The optimal value
+  depends on many factors including (but not limited to) the number of CPU
+  cores, the number of hard disk drives that store data, and load pattern. When
+  one is in doubt, setting it to the number of available CPU cores would be a
+  good start (the value “auto” will try to autodetect it)."
+
+  tag "fix": "Edit the configuration file and set the value of
+  ""worker_processes"" to the value of auto or a value of 1 or higher:
+  worker_processes auto;"
+
+  describe nginx_conf(NGINX_CONF_FILE).params['worker_processes'] do
+    it { should cmp [['auto']] }
+  end
+end
+```
 
 ---
 ### 2.3. InSpec Results
@@ -804,7 +854,7 @@ attributes:
   - name: nginx_version
     type: string
     default: 1.10.3
-    
+
   - name: nginx_modules
     type: array
     default:
@@ -819,9 +869,9 @@ control 'nginx-modules' do
   impact 1.0
   title 'NGINX modules'
   desc 'The required NGINX modules should be installed.'
-  
+
   nginx_modules = attribute('nginx_modules')
-  
+
   describe nginx do
     nginx_modules.each do |current_module|
       its('modules') { should include current_module }
@@ -1029,7 +1079,7 @@ If we would like to have a more [Explicit Subject](https://relishapp.com/rspec/r
 ```ruby
 describe "this is a detailed message" do
   subject { command('ls -al').stdout.strip }
-  it{ should_not be_empty } 
+  it{ should_not be_empty }
 end
 ```
 
