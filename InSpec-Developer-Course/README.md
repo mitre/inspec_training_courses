@@ -1,71 +1,8 @@
 
-## InSpec Developer Course
+# InSpec Developer Course
 
-<!--ts
-   * [1. InSpec Developer Course](#1-inspec-developer-course)
-   * [2. Author](#2-author)
-   * [3. Thank you to](#3-thank-you-to)
-   * [4. Table of Contents](#4-table-of-contents)
-   * [5. About InSpec](#5-about-inspec)
-      * [5.1. Orchestration, Configuration Management, Validation to Deployment](#51-orchestration-configuration-management-validation-to-deployment)
-      * [5.2. Automating Security Validation Using InSpec](#52-automating-security-validation-using-inspec)
-      * [5.3. Processing InSpec Results](#53-processing-inspec-results)
-   * [6. Course Overview](#6-course-overview)
-      * [6.1. InSpec Profile Structure](#61-inspec-profile-structure)
-      * [6.2. InSpec Controls Structure](#62-inspec-controls-structure)
-      * [6.3. InSpec Results](#63-inspec-results)
-         * [6.3.1. Failure](#631-failure)
-         * [6.3.2. Pass](#632-pass)
-         * [6.3.3. Multiple Controls](#633-multiple-controls)
-      * [6.4. Tooling and Reporting](#64-tooling-and-reporting)
-   * [7. Course Environment Setup](#7-course-environment-setup)
-      * [7.1. Download and Install VirtualBox](#71-download-and-install-virtualbox)
-      * [7.2. Download and Install Vagrant](#72-download-and-install-vagrant)
-      * [7.3. Clone or Download-Unzip This Course Repository](#73-clone-or-download-unzip-this-course-repository)
-      * [7.4. Setup Environments](#74-setup-environments)
-         * [7.4.1. Run Vagrant to install the Virtual Environment](#741-run-vagrant-to-install-the-virtual-environment)
-         * [7.4.2. Setup network in VirtualBox](#742-setup-network-in-virtualbox)
-      * [Vagrant Credentials](#vagrant-credentials)
-      * [AWS Credentials](#aws-credentials)
-   * [8. Studying an InSpec profile](#8-studying-an-inspec-profile)
-      * [8.1. Understanding the profile structure](#81-understanding-the-profile-structure)
-      * [8.2. Understand a control's structure](#82-understand-a-controls-structure)
-      * [8.3. Understand a describe block's structure](#83-understand-a-describe-blocks-structure)
-         * [8.3.1. file](#831-file)
-         * [8.3.2. it](#832-it)
-         * [8.3.3. should](#833-should)
-         * [8.3.4. be_directory](#834-be_directory)
-   * [9. Exploring the InSpec Shell](#9-exploring-the-inspec-shell)
-      * [9.1. Enter the shell](#91-enter-the-shell)
-      * [9.2. Explore the file resource](#92-explore-the-file-resource)
-      * [9.3. Explore the nginx resource](#93-explore-the-nginx-resource)
-      * [9.4. Write the InSpec controls](#94-write-the-inspec-controls)
-      * [9.5. Refactor the code to use Attributes](#95-refactor-the-code-to-use-attributes)
-         * [9.5.1. Multiple Attribute Example](#951-multiple-attribute-example)
-      * [9.6. Running baseline straight from Github/Chef Supermarket](#96-running-baseline-straight-from-githubchef-supermarket)
-   * [10. Viewing and Analyzing Results](#10-viewing-and-analyzing-results)
-      * [10.1. Syntax](#101-syntax)
-      * [10.2. Supported Reporters](#102-supported-reporters)
-      * [10.3. Putting it all together](#103-putting-it-all-together)
-   * [11. Automation Tools](#11-automation-tools)
-   * [12. Create basic profile - DAY 2](#12-create-basic-profile---day-2)
-      * [12.1. Download STIG Requirements Here](#121-download-stig-requirements-here)
-      * [12.2. Example Control V-38437](#122-example-control-v-38437)
-      * [12.3. Getting Started on the RHEL6 baseline](#123-getting-started-on-the-rhel6-baseline)
-      * [12.4. Completed RHEL6 Profile for Reference](#124-completed-rhel6-profile-for-reference)
-   * [13. Using what you've learned](#13-using-what-youve-learned)
-   * [14. Cleanup Environments](#14-cleanup-environments)
-   * [15. Additional Resources](#15-additional-resources)
-      * [15.1 Security Guidance](#151-security-guidance)
-      * [15.2 InSpec Documentation](#152-inspec-documentation)
-      * [15.3 Additional Tutorials](#153-additional-tutorials)
-      * [15.4 MITRE InSpec](#154-mitre-inspec)
 
-<!-- Added by: melsharkawi, at:  -->
-
-<!--te-->
-
-# About InSpec 
+## 1. About InSpec 
 - InSpec is an open-source, community-developed  compliance validation framework
 - Provides a mechanism for defining machine-readable compliance and security requirements
 - Easy to create, validate, and read content
@@ -73,164 +10,47 @@
 - Agnostic to other DevOps tools and techniques
 - Integrates into multiple CM tools
 
-## Orchestration, Configuration Management, Validation to Deployment
+### 1.1. Orchestration, Configuration Management, Validation to Deployment
 InSpec operates with most orchestration and CM tools found in the DevOps pipeline implementations
 ![Alt text](../images/InSpec_Orchestration.png?raw=true "InSpec Orchestration")
 
 ---
-## Automating Security Validation Using InSpec
+### 1.2. Automating Security Validation Using InSpec
 ![Alt text](../images/Automating_Security_Validation.png?raw=true "Automating Security Validation")
 
 ---
-## 5.3. Processing InSpec Results
+### 1.3. Processing InSpec Results
 ![Alt text](../images/Processing_InSpec_Results.png?raw=true "Processing InSpec Results")
 
-# 6. Course Overview
-## 6.1. InSpec Profile Structure
+## 2. Course Overview
+### 2.1. InSpec Profile Structure
 ![Alt text](../images/Profile_Structure.png?raw=true "Profile Structure")
 
 ---
-## 6.2. InSpec Controls Structure
+### 2.2. InSpec Controls Structure
 ![Alt text](../images/Controls_Structure.png?raw=true "Controls Structure")
 
 ---
-## 6.3. InSpec Results
-### 6.3.1. Failure
+### 2.3. InSpec Results
+#### 2.3.1. Failure
 ![Alt text](../images/InSpec_Failure.png?raw=true "InSpec Failure")
 
 ---
-### 6.3.2. Pass
+#### 2.3.2. Pass
 ![Alt text](../images/InSpec_Pass.png?raw=true "InSpec Pass")
 
 ---
-### 6.3.3. Multiple Controls
+#### 2.3.3. Multiple Controls
 ![Alt text](../images/InSpec_Multiple_Controls.png?raw=true "InSpec Multiple Controls")
 
 ---
-## 6.4. Tooling and Reporting
+### 2.4. Tooling and Reporting
 ![Alt text](../images/Tooling_Reporting.png?raw=true "Tooling Reporting")
 
 ---
 
 
-# 7. Course Environment Setup
-## 7.1. Download and Install VirtualBox
-[https://www.virtualbox.org/wiki/Downloads](https://www.virtualbox.org/wiki/Downloads)
-
-## 7.2. Download and Install Vagrant
-[https://www.vagrantup.com/downloads.html](https://www.vagrantup.com/downloads.html)
-
-## 7.3. Clone or Download-Unzip This Course Repository
-[https://github.com/mitre/inspec_training_courses](https://github.com/mitre/inspec_training_courses)
-
-
-
-## 7.4. Setup Environments
-Start by creating a working directory. We recommend ~/learn-inspec.  
-`mkdir ~/learn-inspec`  [or from Windows cmd prompt: `mkdir Desktop/learn-inspec`]
-
-Next, move to your working directory.  
-`cd ~/learn-inspec`  [or from Windows cmd prompt: `cd Desktop/learn-inspec`]
-
-### 7.4.1. Run Vagrant to install the Virtual Environment
-Navigate to the `InSpec 102 Dev` folder and run the following command:  
-`$ vagrant up`
-
-Wait for vagrant to finish standing up the virtual environments.
-
-### 7.4.2. Setup network in VirtualBox
-Open VirtualBox and shut down the 3 vm's that were created `workstation`, `target`, `target-centos6`.
-
-Open Preference settings for VirtualBox (**not** the settings for the VM's)
-- Go to the network tab
-- From there click the + symbol to add a new NatNetwork
-- Once you do that your preferences should look like this below:
-![Alt text](../images/Create_NatNetwork.png?raw=true "Create NatNetwork")
-
-Click ok to save the settings.
-
-The following step you will repeat for the 3 vm's `workstation`, `target`, `target-centos6`.
- - Select the virtual machine
- - Click on settings for the virtual machine
- - Navigate to the network tab
- - For `Attached to:` Select `NatNetwork`
- - For `Name` make sure the same NatNetwork is selected for all the virtual machines
- - Click on Advanced dropdown and For `Promiscuous Mode:` make sure to select `Allow VMs`
- - Once you do these steps your preferences should look like this below:
-
- ![Alt text](../images/NatNetwork_VM_Setup.png?raw=true "NatNetwork VM Setup")
-
- - Next you need to Select the Shared Folders
- - Click the + symbol to add a new Shared Folder
- ![Alt text](../images/Add_Shared_Folder.png?raw=true "Add Shared Folder")
- - For Folder Path select the dropdown and select `Other`, navigate to your `~/learn-inspec` folder and select that
- ![Alt text](../images/Select_Shared_Folder.png?raw=true "Select Shared Folder")
- - Select the checkbox for Auto-mount
- ![Alt text](../images/Configure_Shared_Folder.png?raw=true "Configure Shared Folder")
- - Click ok to confirm the shared folder.
- - Once you do these steps your preferences should look like this below:
-![Alt text](../images/Final_Shared_Folder.png?raw=true "Final Shared Folder")
- - Once more click ok to confirm and save the settings
-
-
-
-
-Once the above operations are completed you can startup up the `workstation` and `target` vm's since we will start with those.
-
-```bash
-Vagrant Credentials
----
-Workstation Credentials:  
-u: vagrant  
-p: vagrant
-
-Target Credentials:  
-u: root  
-p: password
-
-Target-CentOS6:  
-u: vagrant  
-p: vagrant
-
-AWS Credentials
----
-Target:  
-u: ubuntu
-
-Target-CentOS6:  
-u: ec2-user
-```
-
----
-The workstation can connect to the target by the target's ip, perform an `ifconfig` on the target to get it's ip. Run curl TARGET_IP and you see that NGINX is running.
-
-```html
-$ curl TARGET_IP
-
-<!DOCTYPE html>
-<html>
-<head>
-<title>Welcome to nginx!</title>
-<style>
-    body {
-        width: 35em;
-        margin: 0 auto;
-        font-family: Tahoma, Verdana, Arial, sans-serif;
-    }
-</style>
-</head>
-<body>
-<h1>Welcome to nginx!</h1>
-...
-...
-<p><em>Thank you for using nginx.</em></p>
-</body>
-</html>
-```
-
-
-
-# 8. Studying an InSpec profile
+## 3. Studying an InSpec profile
 Let's start by creating a profile that will contain NGINX tests.
 
 Start by moving to the /root directory.
@@ -259,7 +79,7 @@ Create new profile at /root/my_nginx
 
 
 
-## 8.1. Understanding the profile structure
+### 3.1. Understanding the profile structure
 
 Let's take a look at how the profile is structured. We'll start with how a profile's files are structured and then move to what makes up an InSpec control.
 
@@ -286,7 +106,7 @@ Here's the role of each component.
 
 
 
-## 8.2. Understand a control's structure
+### 3.2. Understand a control's structure
 
 Let's take a look at the default control file, `controls/example.rb`.
 
@@ -320,11 +140,13 @@ This example shows two tests. Both tests check for the existence of the `/tmp` d
 * `desc` (line 15) provides a more complete description of what the control checks for.
 * `describe` (lines 16 — 18) defines the test. Here, the test checks for the existence of the `/tmp` directory.
 
-In Ruby, the `do` and `end` keywords define a [block](http://ruby-for-beginners.rubymonstas.org/blocks.html). An InSpec control always contains at least one `describe` block. However, a control can contain many `describe` blocks.
+In Ruby, the `do` and `end` keywords define a `block`. An InSpec control always contains at least one `describe` block. However, a control can contain many `describe` blocks.
+::: tip More information on a block
+[block](http://ruby-for-beginners.rubymonstas.org/blocks.html)
+:::
 
 
-
-## 8.3. Understand a describe block's structure
+### 3.3. Understand a describe block's structure
 
 As with many test frameworks, InSpec code resembles natural language. Here's the format of a describe block.
 
@@ -347,28 +169,28 @@ end
 Because InSpec resembles human-readable language, you might read this test as "/tmp should be a directory." Let's break down each component.
 
 ---
-### 8.3.1. file
+#### 3.3.1. file
 
 [file](https://www.inspec.io/docs/reference/resources/file/) is an InSpec [resource](https://www.inspec.io/docs/reference/resources/). If you're familiar with Chef, you know that a resource configures one part of the system. InSpec resources are similar. For example, the InSpec file resource tests for file attributes, including a file's owner, mode, and permissions. The example examines the /tmp directory.
 
 ---
-### 8.3.2. it
+#### 3.3.2. it
 
 The `it` statement validates one of your resource's features. A `describe` block contains one or more `it` statements. `it` enables you to test the resource itself. You'll also see `its`, which describes some feature of the resource, such as its mode or owner. You'll see examples of both `it` and `its` shortly.
 
 ---
-### 8.3.3. should
+#### 3.3.3. should
 
 `should` describes the expectation. `should` asserts that the condition that follows _should_ be true. Alternatively, `should_not` asserts that the condition that follows _should not_ be true. You'll see examples of both shortly.
 
 ---
-### 8.3.4. be_directory
+#### 3.3.4. be_directory
 
 `be_directory` is an example of a [matcher](https://www.inspec.io/docs/reference/matchers/). A matcher compares a resource's actual value to its expected value. InSpec provides several predefined matchers. The `file` resource provides the `be_directory` matcher.
 
 
 
-# 9. Exploring the InSpec Shell
+## 4. Exploring the InSpec Shell
 
 Before we test our NGINX configuration, let's plan which resources and matchers we'll need.
 
@@ -384,7 +206,7 @@ You're not required to use InSpec shell to develop your profiles. Some users fin
 
 
 
-## 9.1. Enter the shell
+### 4.1. Enter the shell
 
 Run `inspec shell` to enter the interactive session.
 
@@ -448,7 +270,7 @@ You see `file` and other resources listed.
 
 
 
-## 9.2. Explore the file resource
+### 4.2. Explore the file resource
 
 Earlier, you saw this `describe` block.
 
@@ -525,7 +347,7 @@ A predicate method typically returns a value that can be evaluated as true or fa
 
 
 
-## 9.3. Explore the nginx resource
+### 4.3. Explore the nginx resource
 
 Now's a good time to define the requirements for our NGINX configuration. Let's say that you require:
 
@@ -700,7 +522,7 @@ inspec> exit
 
 
 
-## 9.4. Write the InSpec controls
+### 4.4. Write the InSpec controls
 
 Now that you understand which methods map to each requirement, you're ready to write InSpec controls.
 
@@ -863,7 +685,7 @@ Remember, the first step, detect, is where you identify where the problems are s
 
 
 
-## 9.5. Refactor the code to use Attributes
+### 4.5. Refactor the code to use Attributes
 Your `my_nginx` profile is off to a great start. As your requirements evolve, you can add additional controls. You can also run this profile as often as you need to verify whether your systems remain in compliance.
 
 Let's review the control file, `example.rb`.
@@ -1008,7 +830,7 @@ control 'nginx-modules' do
 end
 ```
 
-### 9.5.1. Multiple Attribute Example
+#### 4.5.1. Multiple Attribute Example
 
 To change your attributes for platform specific cases you can setup multiple --attrs files.
 
@@ -1061,7 +883,7 @@ $ inspec exec examples/profile-attribute --attrs examples/linux.yml
 
 
 
-## 9.6. Running baseline straight from Github/Chef Supermarket
+### 4.6. Running baseline straight from Github/Chef Supermarket
 In this module, we use NGINX for learning purposes. If you're interested in NGINX specifically, you may be interested in the [MITRE nginx-baseline](https://github.com/mitre/nginx-baseline) profile on GitHub. Alternatively, you may also check out the [DevSec Nginx Baseline](https://supermarket.chef.io/tools/nginx-baseline) profile on Chef Supermarket. These profiles implements many of the tests you wrote in this module.
 
 To execute the GitHub profile on your target system, run this `inspec exec` command.
@@ -1099,14 +921,14 @@ You see that many of the tests pass, while others fail and may require investiga
 
 You may want to extend the `nginx-baseline` with your own custom requirements. To do that, you might use what's called a _wrapper profile_. You can check out [Create a custom InSpec profile](https://learn.chef.io/modules/create-a-custom-profile#/) for a more complete example.
 
-# 10. Viewing and Analyzing Results
+## 5. Viewing and Analyzing Results
 
 InSpec allows you to output your test results to one or more reporters. You can configure the reporter(s) using either the --json-config option or the --reporter option. While you can configure multiple reporters to write to different files, only one reporter can output to the screen(stdout).
 ```
 $ inspec exec /root/my_nginx -t ssh://TARGET_USERNAME:TARGET_PASSWORD@TARGET_IP --reporter cli json:baseline_output.json
 ```
 
-## 10.1. Syntax
+### 5.1. Syntax
 
 You can specify one or more reporters using the --reporter cli flag. You can also specify a output by appending a path separated by a colon.
 
@@ -1158,7 +980,7 @@ Output cli to screen and write json to a file.
 }
 ```
 
-## 10.2. Supported Reporters
+### 5.2. Supported Reporters
 
 The following are the current supported reporters:
 
@@ -1174,13 +996,13 @@ The following are the current supported reporters:
 
 You can read more about [InSpec Reporters](https://www.inspec.io/docs/reference/reporters/) on the documentation page.
 
-## 10.3. Putting it all together
+### 5.3. Putting it all together
 The following command will run the nginx baseline profile from github and use the reporter to output a json, you will need this for the next step loading it into heimdall:
 
 
 ` $ inspec exec https://github.com/dev-sec/nginx-baseline -t ssh://TARGET_USERNAME:TARGET_PASSWORD@TARGET_IP --reporter cli json:baseline_output.json`
 
-# 11. Automation Tools
+## 6. Automation Tools
 Navigate to the web page for [Heimdall Lite](https://mitre.github.io/heimdall-lite/)
 
 Click on the button `Load Json`
@@ -1194,9 +1016,35 @@ Navigate to your json output file that you saved from your previous step and sel
 This will allow you to view the InSpec results in the Heimdall viewer.
 
 
+## 7. Additional InSpec tricks
+### 7.1. rspec Explicit Subject
+Here we have a inspec test that lists out it's current directory. Our original test code looks like this
+```ruby
+describe command('ls -al').stdout.strip do
+  it { should_not be_empty }
+end
+```
 
-# 12. Create basic profile - DAY 2
-## 12.1. Download STIG Requirements Here
+If we would like to have a more [Explicit Subject](https://relishapp.com/rspec/rspec-core/docs/subject/explicit-subject) then we could refactor the code like this example
+```ruby
+describe "this is a detailed message" do
+  subject { command('ls -al').stdout.strip }
+  it{ should_not be_empty } 
+end
+```
+
+### 7.2. looping file structure
+For looping through a file directory, the directory resource is not powerful enough to do that, so we are required to use the `command` resource and run a `find` or it's equivalent for your target OS. This can be very resource intensive on your target so try to be as specific as possible with your search such as the example below:
+```ruby
+command('find ~/* -type f -maxdepth 0 -xdev').stdout.split.each do |fname|
+  describe file(fname) do
+    its('owner') { should cmp 'ec2-user' }
+  end
+end
+```
+
+## 8. Create basic profile - DAY 2
+### 8.1. Download STIG Requirements Here
 Download the latest STIG Viewer located here [STIG Viewer](https://iase.disa.mil/stigs/pages/stig-viewing-guidance.aspx)
 ![Alt text](../images/Download_STIG_Viewer.png?raw=true "STIG Viewer Download")
 
@@ -1206,7 +1054,7 @@ Download the `Red Hat 6 STIG - Ver 1, Rel 21` located here [RHEL6 STIG Download]
 
 
 
-## 12.2. Example Control V-38437
+### 8.2. Example Control V-38437
 Let's take a look at how we would write a the InSpec control for V-38437:
 ```ruby
 control "V-38437" do
@@ -1278,31 +1126,45 @@ Stop the service if it is already running:
   end
 end
 ```
-## 12.3. Getting Started on the RHEL6 baseline
+### 8.3. Getting Started on the RHEL6 baseline
 
-__Suggested Controls to start on:__
-- V-38444
-- V-38451
-- V-38472
-- V-38473
-- V-38595
+__Controls we will demo:__
+- V-38451 <---file resource
+- V-38472 <---directory looping & command resource
+- V-38473 <---mount resource
+- V-38595 <---manual test
+- V-38599 <---non applicable use case & package resource & command resource & parse config file resource
+
+__Suggested Controls to start on (Simple):__
+- V-38450 <---file resource
+- V-38469 <---directory looping & command resource
+- V-38456 <---mount resource
+- V-38659 <---manual test
+
+__Suggested Controls to start on (Hard):__
+- V-38446 <---parse config & command
+- V-38464 <---parse config file
+- V-38490 <---kernel module
+- V-38537 <---kernel parameter
+- V-38576 <---file content
+- V-38474 <---non applicable use case
 
 __Suggested InSpec Resources to use:__
-- command
-- file
-- directory
-- parse_config_file
-- kernel_module
-- package
+- [command](https://www.inspec.io/docs/reference/resources/command/)
+- [file](https://www.inspec.io/docs/reference/resources/file/)
+- [directory](https://www.inspec.io/docs/reference/resources/directory/)
+- [parse_config_file](https://www.inspec.io/docs/reference/resources/parse_config_file/)
+- [kernel_module](https://www.inspec.io/docs/reference/resources/kernel_module/)
+- [package](https://www.inspec.io/docs/reference/resources/package/)
 
-## 12.4. Completed RHEL6 Profile for Reference
+### 8.4. Completed RHEL6 Profile for Reference
 
 Below is the url to the completed RHEL6 Inspec Profile for reference.  
 [red-hat-enterprise-linux-6-stig-baseline](https://github.com/mitre/red-hat-enterprise-linux-6-stig-baseline)
 
 
 
-# 13. Using what you've learned
+## 9. Using what you've learned
 
 Now you should be able to
 -	Describe the InSpec framework and its capabilities
@@ -1321,32 +1183,41 @@ Otherwise you can create your own profiles if they don't exist using the followi
 
 
 
-# 14. Cleanup Environments
+## 10. Cleanup Environments
 If you're done with your vagrant boxes, run the following command to destroy them:
 `vagrant destroy -f`
 
 
+## 11. Additional Resources
 
-# 15. Additional Resources
-
-## 15.1 Security Guidance
+### 11.1 Security Guidance
 [https://iase.disa.mil/stigs/Pages/a-z.aspx](https://iase.disa.mil/stigs/Pages/a-z.aspx)  
 [https://www.cisecurity.org/cis-benchmarks/](https://www.cisecurity.org/cis-benchmarks/)  
 
-## 15.2 InSpec Documentation
+### 11.2 InSpec Documentation
 [InSpec Docs](https://www.inspec.io/docs/)  
 [InSpec Profiles](https://www.inspec.io/docs/reference/profiles/)  
 [InSpec Resources](https://www.inspec.io/docs/reference/resources/)  
 [InSpec Matchers](https://www.inspec.io/docs/reference/matchers/)  
 [InSpec Shell](https://www.inspec.io/docs/reference/shell/)  
 [InSpec Reporters](https://www.inspec.io/docs/reference/reporters/)  
+[InSpec Profile Inheritance](https://blog.chef.io/2017/07/06/understanding-inspec-profile-inheritance/)  
 
-## 15.3 Additional Tutorials
+### 11.3 Additional Tutorials
 [What to Expect When You’re InSpec’ing](https://blog.chef.io/2018/04/03/what-to-expect-when-youre-inspecing/)  
 [Getting started with InSpec - The InSpec basics series](http://www.anniehedgie.com/inspec/)  
 [Windows infrastructure testing using InSpec – Part I](http://datatomix.com/?p=236)  
 [Windows infrastructure testing using InSpec and Profiles – Part II](http://datatomix.com/?p=238)  
 
-## 15.4 MITRE InSpec
+### 11.4 MITRE InSpec
 [MITRE InSpec Repositories](https://github.com/orgs/mitre/teams/inspec/repositories)  
-[InSpec Tools](https://github.com/mitre/inspec_tools)
+[InSpec Tools](https://github.com/mitre/inspec_tools)  
+[Heimdall Lite](https://mitre.github.io/heimdall-lite/#)  
+
+### 11.5. rspec documentation
+[Explicit Subject](https://relishapp.com/rspec/rspec-core/docs/subject/explicit-subject)  
+[should and should_not](https://github.com/rspec/rspec-expectations/blob/master/Should.md)  
+[Built in matchers](https://relishapp.com/rspec/rspec-expectations/docs/built-in-matchers)  
+
+### 11.6. Slack
+[Chef Slack](http://community-slack.chef.io/)  

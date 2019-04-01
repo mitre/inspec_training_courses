@@ -1,12 +1,13 @@
-module.exports = 
+module.exports =
 {
 
     title: 'InSpec Profile Developers Course',
-    description: "The MITRE InSpec Team's introduction to InSpec Profile Developmnet" ,
+    description: "The MITRE InSpec Team's introduction to InSpec Profile Development" ,
 
-    themeConfig: 
+    themeConfig:
     {
         sidebar: 'auto',
+        sidebarDepth: 4,
         navbar: 'auto',
         nav: [
                 {
@@ -15,27 +16,35 @@ module.exports =
                 },
                 {
                     text: 'Install',
-                    items: 
+                    items:
                     [
                         {
-                        text: 'Linux',
-                        link: '/installation/LinuxInstall.md'
-                    },
-                    {
-                        text: 'Mac',
-                        link: '/installation/MacInstall.md'
-                    },
-                    {
-                        text: 'Windows',
-                        link: '/installation/WindowsInstall.md'
-                    }
-                ],
-            },
-            {
-                text: 'Resources',
-                link: '/resources/',
-            },
-     ],
+                            text: 'Linux',
+                            link: '/installation/LinuxInstall.md'
+                        },
+                        {
+                            text: 'Mac',
+                            link: '/installation/MacInstall.md'
+                        },
+                        {
+                            text: 'Windows',
+                            link: '/installation/WindowsInstall.md'
+                        },
+                        {
+                            text: 'Vagrant Install',
+                            link: '/installation/vagrant_install.md'
+                        }
+                    ],
+                },
+                {
+                    text: 'Resources',
+                    link: '/resources/',
+                },
+                {
+                    text: 'Contact',
+                    link: 'contact.md'
+                },
+            ],
     },
     markdown: {
         lineNumbers: true,
@@ -44,8 +53,7 @@ module.exports =
         },
         // options for markdown-it-toc
         toc: {
-            includeLevel: [1, 2],
-            listType: 'ul',            
+            includeLevel: [1, 2, 3, 4]
         },
     }
 }
