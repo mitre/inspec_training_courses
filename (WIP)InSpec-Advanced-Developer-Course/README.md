@@ -1,6 +1,35 @@
 
 # InSpec Advanced Developer Course
 
+1. About InSpec
+2. Overview of course
+3. Recap of a profile (along with writing a quick resource)
+4. Going over advanced techniques in profile development
+5. Talk about resources in depth
+6. Show outline of resource (all components of how a resource is built)
+7. Describe difference between local resource and builtin inspec resource
+8. Dissect a few resources (prebuilt ones)
+    1. Nginx
+    2. File
+    3. Directory
+    4. command
+    5. Docker
+    6. Etc..
+9. Create new inspec profile and write small controls
+10. Demo development of a few different resources
+    1. Create resource to read docker file
+    2. Create git resource to scan git branches
+    3. Custom nginx one that Rony built
+11. Exercise where students write a small resource together
+    1. Have objectives written of what resource should do
+12. Day 2: Exercise Developing your own resources
+    1. Have a few resource ideas along with what objectives you need to write that resource. (Have them all prebuilt to show as an example)
+    2. Also let students branch off and develop their own resources
+13. Day 3: Show the way to push a resource to inspec
+    1. Fork -> Branch -> list directories where changes need to be made.
+    2. Go over writing test cases for resource
+14. Day 3: Update a few resources that were previously built and show the process for moving that resource to be put in inspec
+
 
 ## 1. About InSpec
 - InSpec is an open-source, community-developed  compliance validation framework
