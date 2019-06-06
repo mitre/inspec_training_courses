@@ -1,0 +1,10 @@
+{
+  "dependencies": {
+    "global": "^4.3.2",
+    "vuepress": "^1.0.0-alpha.46"
+  },
+  "devDependencies": {
+    "@vuepress/plugin-back-to-top": "^1.0.0-alpha.46",
+    "markdown-it-vuepress-code-snippet-enhanced": "^1.0.1"
+  }
+}
