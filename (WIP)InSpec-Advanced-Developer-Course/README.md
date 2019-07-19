@@ -1,36 +1,6 @@
 
 # InSpec Advanced Developer Course
 
-1. About InSpec
-2. Overview of course
-3. Recap of a profile (along with writing a quick resource)
-4. Going over advanced techniques in profile development
-5. Talk about resources in depth
-6. Show outline of resource (all components of how a resource is built)
-7. Describe difference between local resource and builtin inspec resource
-8. Dissect a few resources (prebuilt ones)
-    1. Nginx
-    2. File
-    3. Directory
-    4. command
-    5. Docker
-    6. Etc..
-9. Create new inspec profile and write small controls
-10. Demo development of a few different resources
-    1. Create resource to read docker file
-    2. Create git resource to scan git branches
-    3. Custom nginx one that Rony built
-11. Exercise where students write a small resource together
-    1. Have objectives written of what resource should do
-12. Day 2: Exercise Developing your own resources
-    1. Have a few resource ideas along with what objectives you need to write that resource. (Have them all prebuilt to show as an example)
-    2. Also let students branch off and develop their own resources
-13. Day 3: Show the way to push a resource to inspec
-    1. Fork -> Branch -> list directories where changes need to be made.
-    2. Go over writing test cases for resource
-14. Day 3: Update a few resources that were previously built and show the process for moving that resource to be put in inspec
-
-
 ## 1. About InSpec
 - InSpec is an open-source, community-developed  compliance validation framework
 - Provides a mechanism for defining machine-readable compliance and security requirements
@@ -205,8 +175,8 @@ control 'tmp-1.0' do                        # A unique ID for this control
   end
 end
 ```
-::: tip test
-this is a good tip
+::: tip Tip for developing profiles
+When creating new profiles use the existing example file as a template
 :::
 
 This example shows two tests. Both tests check for the existence of the `/tmp` directory. The second test provides additional information about the test. Let's break down each component.
@@ -267,7 +237,48 @@ The `it` statement validates one of your resource's features. A `describe` block
 
 
 
-## 4. Exploring InSpec Resources
+## 4. Advanced techniques in profile development
+### 4.1. rspec Explicit Subject
+Here we have a inspec test that lists out it's current directory. Our original test code looks like this
+```ruby
+describe command('ls -al').stdout.strip do
+  it { should_not be_empty }
+end
+```
+
+If we would like to have a more [Explicit Subject](https://relishapp.com/rspec/rspec-core/docs/subject/explicit-subject) then we could refactor the code like this example
+```ruby
+describe "this is a detailed message" do
+  subject { command('ls -al').stdout.strip }
+  it{ should_not be_empty }
+end
+```
+
+### 4.2. looping file structure
+For looping through a file directory, the directory resource is not powerful enough to do that, so we are required to use the `command` resource and run a `find` or it's equivalent for your target OS. This can be very resource intensive on your target so try to be as specific as possible with your search such as the example below:
+```ruby
+command('find ~/* -type f -maxdepth 0 -xdev').stdout.split.each do |fname|
+  describe file(fname) do
+    its('owner') { should cmp 'ec2-user' }
+  end
+end
+```
+
+### 4.3. Checking password encryption
+Here we have an inspec test that checks if passwords are SHA512 hashes. As a quick thought exercise can you think of how we can adjust the control below to support SHA512 or higher assuming where you are testing uses SHA1024 or even SHA2048?
+
+```ruby
+bad_users = inspec.shadow.where { password != "*" && password != "!" && password !~ /\$6\$/ }.users
+
+describe 'Password hashes in /etc/shadow' do
+  it 'should only contain SHA512 hashes' do
+    failure_message = "Users without SHA512 hashes: #{bad_users.join(', ')}"
+    expect(bad_users).to be_empty, failure_message
+  end
+end
+```
+
+## 5. Exploring InSpec Resources
 
 Before we dive into the course we want to take a look into what is a resource.
 
@@ -276,12 +287,11 @@ When writing InSpec code, many resources are available to you.
 * You can [explore the InSpec resources](https://www.inspec.io/docs/reference/resources/) to see which resources are available.
 * You can [examine the source code](https://github.com/inspec/inspec/tree/master/lib/inspec/resources) to see what's available. For example, you can see how file and other InSpec resources are implemented.
 
-There's also [Resource DSL](https://www.inspec.io/docs/reference/dsl_resource/), which gives a brief overview of how.
+There's also [Resource DSL](https://www.inspec.io/docs/reference/dsl_resource/), which gives a brief overview of how to write your own resource.
 
 
 
-
-### 4.1. Resource Overview
+### 5.1. Resource Overview
 
 Resources may be added to profiles in the libraries folder:
 ```bash
@@ -293,7 +303,7 @@ examples/profile
 ```
 
 
-### 4.2. Resource Structure
+### 5.2. Resource Structure
 The smallest possible resource takes this form:
 
 ```ruby
@@ -363,901 +373,1082 @@ class GordonConfig < Inspec.resource(1)
 end
 ```
 
-### 4.3. Explore the file resource
+## 6. Explore the basics of a resource
+### 6.1. class
+### 6.2. name
+### 6.3. supports
+### 6.4. desc & examples
+### 6.5. initialize method
+### 6.6. functionality methods
 
-Earlier, you saw this `describe` block.
 
+## 7. Local Resource vs Builtin Resource
+### 7.1. Local Resource
+### 7.2. Builtin InSpec Resource
+
+
+## 8. Dissecting Resources
+### 8.1. NGINX
 ```ruby
-describe file('/tmp') do                  # The actual test
-  it { should be_directory }
-end
-```
+require "pathname"
+require "hashie/mash"
+require "inspec/resources/command"
 
-Let's run a few commands from the InSpec shell to see how the `file` resource works.
+module Inspec::Resources
+  class Nginx < Inspec.resource(1)
+    name "nginx"
+    supports platform: "unix"
+    desc "Use the nginx InSpec audit resource to test information about your NGINX instance."
+    example <<~EXAMPLE
+      describe nginx do
+        its('conf_path') { should cmp '/etc/nginx/nginx.conf' }
+      end
+      describe nginx('/etc/sbin/') do
+        its('version') { should be >= '1.0.0' }
+      end
+      describe nginx do
+        its('modules') { should include 'my_module' }
+      end
+    EXAMPLE
+    attr_reader :params, :bin_dir
 
-InSpec is built on the Ruby programming language. InSpec matchers are implemented as Ruby methods. Run this command to list which methods are available to the `file` resource.
+    def initialize(nginx_path = "/usr/sbin/nginx")
+      return skip_resource "The `nginx` resource is not yet available on your OS." if inspec.os.windows?
+      return skip_resource "The `nginx` binary not found in the path provided." unless inspec.command(nginx_path).exist?
 
-```bash
-inspec> file('/tmp').class.superclass.instance_methods(false).sort
-        => [:allowed?,
-         :basename,
-         :block_device?,
-         :character_device?,
-         :contain,
-         :content,
-         :directory?,
-         ...
-         :sticky,
-         :sticky?,
-         :suid,
-         :symlink?,
-         :to_s,
-         :type,
-         :uid,
-         :version?,
-         :writable?]
-```
+      cmd = inspec.command("#{nginx_path} -V 2>&1")
+      if cmd.exit_status != 0
+        return skip_resource "Error using the command nginx -V"
+      end
 
-You can use the arrow or Page Up and Page Down keys to scroll through the list. When you're done, press `Q`.
+      @data = cmd.stdout
+      @params = {}
+      read_content
+    end
 
-```bash
-InSpec shell is based on a tool called pry. If you're not familiar with pry or other REPL tools, later you can check out pry to learn more.
-```
+    %w{error_log_path http_client_body_temp_path http_fastcgi_temp_path http_log_path http_proxy_temp_path http_scgi_temp_path http_uwsgi_temp_path lock_path modules_path prefix sbin_path service version}.each do |property|
+      define_method(property.to_sym) do
+        @params[property.to_sym]
+      end
+    end
 
-As an example, call the `file.directory?` method.
+    def openssl_version
+      result = @data.scan(/built with OpenSSL\s(\S+)\s(\d+\s\S+\s\d{4})/).flatten
+      Hashie::Mash.new({ "version" => result[0], "date" => result[1] })
+    end
 
-```bash
-inspec> file('/tmp').directory?
-        => true
-```
+    def compiler_info
+      result = @data.scan(/built by (\S+)\s(\S+)\s(\S+)/).flatten
+      Hashie::Mash.new({ "compiler" => result[0], "version" => result[1], "date" => result[2] })
+    end
 
-You see that the `/tmp` directory exists on your workstation container.
+    def support_info
+      support_info = @data.scan(/(.*\S+) support enabled/).flatten
+      support_info.empty? ? nil : support_info.join(" ")
+    end
 
-InSpec transforms resource methods to matchers. For example, the `file.directory?` method becomes the `be_directory` matcher. The `file.readable?` method becomes the `be_readable` matcher.
+    def modules
+      @data.scan(/--with-(\S+)_module/).flatten
+    end
 
-The InSpec shell understands the structure of blocks. This enables you to run mutiline code. As an example, run the entire `describe` block like this.
+    def to_s
+      "Nginx Environment"
+    end
 
-```bash
-inspec> describe file('/tmp') do
-inspec>  it { should be_directory }
-inspec> end
-        Profile: inspec-shell
-        Version: (not specified)
+    private
 
-          File /tmp
-             ✔  should be directory
+    def read_content
+      parse_config
+      parse_path
+      parse_http_path
+    end
 
-        Test Summary: 1 successful, 0 failures, 0 skipped
-```
+    def parse_config
+      @params[:prefix] = @data.scan(/--prefix=(\S+)\s/).flatten.first
+      @params[:service] = "nginx"
+      @params[:version] = @data.scan(%r{nginx version: nginx\/(\S+)\s}).flatten.first
+    end
 
-In practice, you don't typically run controls interactively, but it's a great way to test out your ideas.
+    def parse_path
+      @params[:sbin_path] = @data.scan(/--sbin-path=(\S+)\s/).flatten.first
+      @params[:modules_path] = @data.scan(/--modules-path=(\S+)\s/).flatten.first
+      @params[:error_log_path] = @data.scan(/--error-log-path=(\S+)\s/).flatten.first
+      @params[:http_log_path] = @data.scan(/--http-log-path=(\S+)\s/).flatten.first
+      @params[:lock_path] = @data.scan(/--lock-path=(\S+)\s/).flatten.first
+    end
 
-```bash
-A Ruby method that ends in ?, such as directory? is known as a predicate method. The ? syntax is intended to make Ruby code easier to read.
-
-A predicate method typically returns a value that can be evaluated as true or false. In Ruby, false and nil are false; everything else evaluates to true.
-```
-
-
-
-### 4.4. Explore the nginx resource
-
-Now's a good time to define the requirements for our NGINX configuration. Let's say that you require:
-
-```
-1. NGINX version 1.10.3 or later.
-2. the following NGINX modules to be installed:
-   * `http_ssl`
-   * `stream_ssl`
-   * `mail_ssl`
-3. the NGINX configuration file, `/etc/nginx/nginx.conf`, to:
-   * be owned by the `root` user and group.
-   * not be readable, writeable, or executable by others.
-
-```
-
-Let's see what resources are available to help define these requirements as InSpec controls.
-
-Run `help resources` a second time. Notice InSpec provides two built-in resources to support NGINX – `nginx` and `nginx_conf`.
-
-```
-inspec> help resources
-         - aide_conf
-         - apache
-         - apache_conf
-         - apt
-         ...
-         - nginx
-         - nginx_conf
-         ...
-         - xml
-         - yaml
-         - yum
-         - yumrepo
-         - zfs_dataset
-         - zfs_pool
-```
-
-Run `nginx.methods`. You see the `version` and `modules` methods. You'll use these methods to define the first two requirements.
-
-```
-inspec> nginx.class.superclass.instance_methods(false).sort
-        => [:bin_dir,
-         :compiler_info,
-         :error_log_path,
-         :http_client_body_temp_path,
-         :http_fastcgi_temp_path,
-         :http_log_path,
-         :http_proxy_temp_path,
-         :http_scgi_temp_path,
-         :http_uwsgi_temp_path,
-         :lock_path,
-         :modules,
-         :modules_path,
-         :openssl_version,
-         ...
-         :to_s,
-         :version]
-```
-
-Run `nginx.version` to see what result you get.
-
-```
-inspec> nginx.version
-        NoMethodError: undefined method `[]' for nil:NilClass
-        from /opt/inspec/embedded/lib/ruby/gems/2.4.0/gems/inspec-2.0.17/lib/resources/nginx.rb:39:in `block (2 levels) in <class:Nginx>'
-```
-
-Notice the error. This tells us that NGINX is not installed. Recall that you're working on your workstation container environment, which does not have NGINX installed. Run the following [package](https://www.inspec.io/docs/reference/resources/package/) resource to verify.
-
-```
-inspec> package('nginx').installed?
-        => false
-```
-
-Although you've discovered the methods you need – `version` and `modules` – let's run InSpec shell commands against the target that does have NGINX installed to see what results we find. To do so, first start by exiting your InSpec shell session.
-
-```
-inspec> exit
-```
-
-Run `inspec shell` a second time. This time, provide the `-t` argument to connect the shell session to the target container. This is similar to how you ran `inspec exec` in the [Try InSpec](https://learn.chef.io/modules/try-inspec#/step4.3) module to scan the target from the workstation.
-
-```
-$ inspec shell -t ssh://TARGET_USERNAME:TARGET_PASSWORD@TARGET_IP
-  Welcome to the interactive InSpec Shell
-  To find out how to use it, type: help
-
-  You are currently running on:
-
-      Name:      ubuntu
-      Families:  debian, linux, unix
-      Release:   16.04
-      Arch:      x86_64
-```
-
-Remember that the target does not have the InSpec CLI installed on it. Your shell session exists on the workstation container; InSpec routes commands to the target instance over SSH.
-
-Run the `package` resource a second time, this time on the target container.
-
-```
-inspec> package('nginx').installed?
-        => true
-```
-
-You see that NGINX is installed. Now run `nginx.version`.
-
-```
-inspec> nginx.version
-        => "1.10.3"
-```
-
-You see that version 1.10.3 is installed. To complete the example, run `nginx.modules` to list the installed NGINX modules.
-
-```
-inspec> nginx.modules
-        => ["http_ssl",
-         "http_stub_status",
-         "http_realip",
-         "http_auth_request",
-         "http_addition",
-         "http_dav",
-         "http_geoip",
-         "http_gunzip",
-         "http_gzip_static",
-         "http_image_filter",
-         "http_v2",
-         "http_sub",
-         "http_xslt",
-         "stream_ssl",
-         "mail_ssl"]
-```
-
-You see that the required modules, `http_ssl`, `stream_ssl`, and `mail_ssl`, are installed.
-
-The [nginx_conf](https://www.inspec.io/docs/reference/resources/nginx_conf/) resource examines the contents of the NGINX configuration file, `/etc/nginx/nginx.conf`.
-
-Recall that the third requirement is to check whether the NGINX configuration file is owned by `root` and is not readable, writeable, or executable by others. Because we want to test attributes of the file itself, and not its contents, you'll use the `file` resource.
-
-You saw earlier how the `file` resource provides the `readable`, `writeable`, and `executable` methods. You would also see that the `file` resource provides the `owned_by` and `grouped_into` methods.
-
-```
-inspec> file('/tmp').class.superclass.instance_methods(false).sort
-        => [:allowed?,
-         :directory?,
-         :executable?,
-         :exist?,
-         :file,
-         :file?,
-         :file_version,
-         :gid,
-         :group,
-         :grouped_into?,
-         ...
-         :owned_by?,
-         ...
-         :readable?,
-         ...
-         :to_s,
-         :type,
-         :uid,
-         :version?,
-         :writable?]
-```
-
-These 5 `file` methods – `grouped_into`, `executable`, `owned_by`, `readable` and `writeable` – provide everything we need for the third requirement.
-
-Exit the InSpec shell session.
-
-```
-inspec> exit
-```
-
-
-
-### 4.5. Write the InSpec controls
-
-Now that you understand which methods map to each requirement, you're ready to write InSpec controls.
-
-To review, recall that you require:
-
----
-1. NGINX version 1.10.3 or later.
-2. the following NGINX modules to be installed:
-   * `http_ssl`
-   * `stream_ssl`
-   * `mail_ssl`
-3. the NGINX configuration file, `/etc/nginx/nginx.conf`, to:
-   * be owned by the `root` user and group.
-   * not be readable, writeable, or executable by others.
-
----
-The first requirement is for the NGINX version to be 1.10.3 or later. To check this, you use the `cmp` matcher. Replace the contents of `/root/my_nginx/controls/example.rb` with this.
-
-```ruby
-control 'nginx-version' do
-  impact 1.0
-  title 'NGINX version'
-  desc 'The required version of NGINX should be installed.'
-  describe nginx do
-    its('version') { should cmp >= '1.10.3' }
+    def parse_http_path
+      @params[:http_client_body_temp_path] = @data.scan(/--http-client-body-temp-path=(\S+)\s/).flatten.first
+      @params[:http_proxy_temp_path] = @data.scan(/--http-proxy-temp-path=(\S+)\s/).flatten.first
+      @params[:http_fastcgi_temp_path] = @data.scan(/--http-fastcgi-temp-path=(\S+)\s/).flatten.first
+      @params[:http_uwsgi_temp_path] = @data.scan(/--http-uwsgi-temp-path=(\S+)\s/).flatten.first
+      @params[:http_scgi_temp_path] = @data.scan(/--http-scgi-temp-path=(\S+)\s/).flatten.first
+    end
   end
 end
 ```
-:::tip The `nginx_conf` resource docs
-[`nginx_conf`](https://www.inspec.io/docs/reference/resources/nginx_conf/)
-:::
-
-The test has an impact of 1.0, meaning it is most critical. A failure might indicate to the team that this issue should be resolved as soon as possible, likely by upgrading NGINX to a newer version. The test compares `nginx.version` against version 1.10.3.
-
-`cmp` is one of InSpec's [built-in matchers](https://www.inspec.io/docs/reference/matchers/). `cmp` understands version numbers and can use the operators ==, <, <=, >=, and >. `cmp` compares versions by each segment, not as a string. For example, "7.4" is less than than "7.30".
-
-Next, run `inspec exec` to execute the profile on the remote target.
-
-```
-$ inspec exec /root/my_nginx -t ssh://TARGET_USERNAME:TARGET_PASSWORD@TARGET_IP
-
-  Profile: InSpec Profile (my_nginx)
-  Version: 0.1.0
-  Target:  ssh://TARGET_USERNAME@TARGET_IP:22
-
-    ✔  nginx-version: NGINX version
-       ✔  Nginx Environment version should cmp >= "1.10.3"
-
-
-  Profile Summary: 1 successful control, 0 control failures, 0 controls skipped
-  Test Summary: 1 successful, 0 failures, 0 skipped
-```
-
-You see that the test passes.
-
-The second requirement verifies that these modules are installed.
-
-* http_ssl
-* stream_ssl
-* mail_ssl
-
-Modify your control file like this.
-
+### 8.2. File
 ```ruby
-...
+# copyright: 2015, Vulcano Security GmbH
 
-control 'nginx-modules' do
-  impact 1.0
-  title 'NGINX modules'
-  desc 'The required NGINX modules should be installed.'
-  describe nginx do
-    its('modules') { should include 'http_ssl' }
-    its('modules') { should include 'stream_ssl' }
-    its('modules') { should include 'mail_ssl' }
+require "shellwords"
+require "inspec/utils/parser"
+
+module Inspec::Resources
+  module FilePermissionsSelector
+    def select_file_perms_style(os)
+      if os.unix?
+        UnixFilePermissions.new(inspec)
+      elsif os.windows?
+        WindowsFilePermissions.new(inspec)
+      end
+    end
+  end
+
+  # TODO: rename file_resource.rb
+  class FileResource < Inspec.resource(1)
+    include FilePermissionsSelector
+    include LinuxMountParser
+
+    name "file"
+    supports platform: "unix"
+    supports platform: "windows"
+    desc "Use the file InSpec audit resource to test all system file types, including files, directories, symbolic links, named pipes, sockets, character devices, block devices, and doors."
+    example <<~EXAMPLE
+      describe file('path') do
+        it { should exist }
+        it { should be_file }
+        it { should be_readable }
+        it { should be_writable }
+        it { should be_executable.by_user('root') }
+        it { should be_owned_by 'root' }
+        its('mode') { should cmp '0644' }
+      end
+    EXAMPLE
+
+    attr_reader :file, :mount_options
+    def initialize(path)
+      # select permissions style
+      @perms_provider = select_file_perms_style(inspec.os)
+      @file = inspec.backend.file(path)
+    end
+
+    %w{
+      type exist? file? block_device? character_device? socket? directory?
+      symlink? pipe? mode mode? owner owned_by? group grouped_into?
+      link_path shallow_link_path linked_to? mtime size selinux_label immutable?
+      product_version file_version version? md5sum sha256sum
+      path basename source source_path uid gid
+    }.each do |m|
+      define_method m do |*args|
+        file.send(m, *args)
+      end
+    end
+
+    def content
+      res = file.content
+      return nil if res.nil?
+
+      res.force_encoding("utf-8")
+    end
+
+    def contain(*_)
+      raise "Contain is not supported. Please use standard RSpec matchers."
+    end
+
+    def readable?(by_usergroup, by_specific_user)
+      return false unless exist?
+      return skip_resource "`readable?` is not supported on your OS yet." if @perms_provider.nil?
+
+      file_permission_granted?("read", by_usergroup, by_specific_user)
+    end
+
+    def writable?(by_usergroup, by_specific_user)
+      return false unless exist?
+      return skip_resource "`writable?` is not supported on your OS yet." if @perms_provider.nil?
+
+      file_permission_granted?("write", by_usergroup, by_specific_user)
+    end
+
+    def executable?(by_usergroup, by_specific_user)
+      return false unless exist?
+      return skip_resource "`executable?` is not supported on your OS yet." if @perms_provider.nil?
+
+      file_permission_granted?("execute", by_usergroup, by_specific_user)
+    end
+
+    def allowed?(permission, opts = {})
+      return false unless exist?
+      return skip_resource "`allowed?` is not supported on your OS yet." if @perms_provider.nil?
+
+      file_permission_granted?(permission, opts[:by], opts[:by_user])
+    end
+
+    def mounted?(expected_options = nil, identical = false)
+      mounted = file.mounted
+
+      # return if no additional parameters have been provided
+      return file.mounted? if expected_options.nil?
+
+      # deprecation warning, this functionality will be removed in future version
+      Inspec.deprecate(:file_resource_be_mounted_matchers, "The file resource `be_mounted.with` and `be_mounted.only_with` matchers are deprecated. Please use the `mount` resource instead")
+
+      # we cannot read mount data on non-Linux systems
+      return nil unless inspec.os.linux?
+
+      # parse content if we are on linux
+      @mount_options ||= parse_mount_options(mounted.stdout, true)
+
+      if identical
+        # check if the options should be identical
+        @mount_options == expected_options
+      else
+        # otherwise compare the selected values
+        @mount_options.contains(expected_options)
+      end
+    end
+
+    def suid
+      (mode & 04000) > 0
+    end
+
+    alias setuid? suid
+
+    def sgid
+      (mode & 02000) > 0
+    end
+
+    alias setgid? sgid
+
+    def sticky
+      (mode & 01000) > 0
+    end
+
+    alias sticky? sticky
+
+    def more_permissive_than?(max_mode = nil)
+      raise Inspec::Exceptions::ResourceFailed, "The file" + file.path + "doesn't seem to exist" unless exist?
+      raise ArgumentError, "You must proivde a value for the `maximum allowable permission` for the file." if max_mode.nil?
+      raise ArgumentError, "You must proivde the `maximum permission target` as a `String`, you provided: " + max_mode.class.to_s unless max_mode.is_a?(String)
+      raise ArgumentError, "The value of the `maximum permission target` should be a valid file mode in 4-ditgit octal format: for example, `0644` or `0777`" unless /(0)?([0-7])([0-7])([0-7])/.match?(max_mode)
+
+      # Using the files mode and a few bit-wise calculations we can ensure a
+      # file is no more permisive than desired.
+      #
+      # 1. Calculate the inverse of the desired mode (e.g., 0644) by XOR it with
+      # 0777 (all 1s). We are interested in the bits that are currently 0 since
+      # it indicates that the actual mode is more permissive than the desired mode.
+      # Conversely, we dont care about the bits that are currently 1 because they
+      # cannot be any more permissive and we can safely ignore them.
+      #
+      # 2. Calculate the above result of ANDing the actual mode and the inverse
+      # mode. This will determine if any of the bits that would indicate a more
+      # permissive mode are set in the actual mode.
+      #
+      # 3. If the result is 0000, the files mode is equal
+      # to or less permissive than the desired mode (PASS). Otherwise, the files
+      # mode is more permissive than the desired mode (FAIL).
+
+      max_mode = max_mode.to_i(8)
+      inv_mode = 0777 ^ max_mode
+
+      inv_mode & file.mode != 0
+    end
+
+    def to_s
+      "File #{source_path}"
+    end
+
+    private
+
+    def file_permission_granted?(access_type, by_usergroup, by_specific_user)
+      raise "`file_permission_granted?` is not supported on your OS" if @perms_provider.nil?
+
+      if by_specific_user.nil? || by_specific_user.empty?
+        @perms_provider.check_file_permission_by_mask(file, access_type, by_usergroup, by_specific_user)
+      else
+        @perms_provider.check_file_permission_by_user(access_type, by_specific_user, source_path)
+      end
+    end
+  end
+
+  class FilePermissions
+    attr_reader :inspec
+    def initialize(inspec)
+      @inspec = inspec
+    end
+  end
+
+  class UnixFilePermissions < FilePermissions
+    def permission_flag(access_type)
+      case access_type
+      when "read"
+        "r"
+      when "write"
+        "w"
+      when "execute"
+        "x"
+      else
+        raise "Invalid access_type provided"
+      end
+    end
+
+    def usergroup_for(usergroup, specific_user)
+      if usergroup == "others"
+        "other"
+      elsif (usergroup.nil? || usergroup.empty?) && specific_user.nil?
+        "all"
+      else
+        usergroup
+      end
+    end
+
+    def check_file_permission_by_mask(file, access_type, usergroup, specific_user)
+      usergroup = usergroup_for(usergroup, specific_user)
+      flag = permission_flag(access_type)
+      mask = file.unix_mode_mask(usergroup, flag)
+      raise "Invalid usergroup/owner provided" if mask.nil?
+
+      (file.mode & mask) != 0
+    end
+
+    def check_file_permission_by_user(access_type, user, path)
+      flag = permission_flag(access_type)
+      if inspec.os.linux?
+        perm_cmd = "su -s /bin/sh -c \"test -#{flag} #{path}\" #{user}"
+      elsif inspec.os.bsd? || inspec.os.solaris?
+        perm_cmd = "sudo -u #{user} test -#{flag} #{path}"
+      elsif inspec.os.aix?
+        perm_cmd = "su #{user} -c test -#{flag} #{path}"
+      elsif inspec.os.hpux?
+        perm_cmd = "su #{user} -c \"test -#{flag} #{path}\""
+      else
+        return skip_resource "The `file` resource does not support `by_user` on your OS."
+      end
+
+      cmd = inspec.command(perm_cmd)
+      cmd.exit_status == 0 ? true : false
+    end
+  end
+
+  class WindowsFilePermissions < FilePermissions
+    def check_file_permission_by_mask(_file, _access_type, _usergroup, _specific_user)
+      raise "`check_file_permission_by_mask` is not supported on Windows"
+    end
+
+    def more_permissive_than?(*)
+      raise Inspec::Exceptions::ResourceSkipped, "The `more_permissive_than?` matcher is not supported on your OS yet."
+    end
+
+    def check_file_permission_by_user(access_type, user, path)
+      access_rule = translate_perm_names(access_type)
+      access_rule = convert_to_powershell_array(access_rule)
+
+      cmd = inspec.command("@(@((Get-Acl '#{path}').access | Where-Object {$_.AccessControlType -eq 'Allow' -and $_.IdentityReference -eq '#{user}' }) | Where-Object {($_.FileSystemRights.ToString().Split(',') | % {$_.trim()} | ? {#{access_rule} -contains $_}) -ne $null}) | measure | % { $_.Count }")
+      cmd.stdout.chomp == "0" ? false : true
+    end
+
+    private
+
+    def convert_to_powershell_array(arr)
+      if arr.empty?
+        "@()"
+      else
+        %{@('#{arr.join("', '")}')}
+      end
+    end
+
+    # Translates a developer-friendly string into a list of acceptable
+    # FileSystemRights that match it, because Windows has a fun heirarchy
+    # of permissions that are able to be noted in multiple ways.
+    #
+    # See also: https://www.codeproject.com/Reference/871338/AccessControl-FileSystemRights-Permissions-Table
+    def translate_perm_names(access_type)
+      names = translate_common_perms(access_type)
+      names ||= translate_granular_perms(access_type)
+      names ||= translate_uncommon_perms(access_type)
+      raise "Invalid access_type provided" unless names
+
+      names
+    end
+
+    def translate_common_perms(access_type)
+      case access_type
+      when "full-control"
+        %w{FullControl}
+      when "modify"
+        translate_perm_names("full-control") + %w{Modify}
+      when "read"
+        translate_perm_names("modify") + %w{ReadAndExecute Read}
+      when "write"
+        translate_perm_names("modify") + %w{Write}
+      when "execute"
+        translate_perm_names("modify") + %w{ReadAndExecute ExecuteFile Traverse}
+      when "delete"
+        translate_perm_names("modify") + %w{Delete}
+      end
+    end
+
+    def translate_uncommon_perms(access_type)
+      case access_type
+      when "delete-subdirectories-and-files"
+        translate_perm_names("full-control") + %w{DeleteSubdirectoriesAndFiles}
+      when "change-permissions"
+        translate_perm_names("full-control") + %w{ChangePermissions}
+      when "take-ownership"
+        translate_perm_names("full-control") + %w{TakeOwnership}
+      when "synchronize"
+        translate_perm_names("full-control") + %w{Synchronize}
+      end
+    end
+
+    def translate_granular_perms(access_type)
+      case access_type
+      when "write-data", "create-files"
+        translate_perm_names("write") + %w{WriteData CreateFiles}
+      when "append-data", "create-directories"
+        translate_perm_names("write") + %w{CreateDirectories AppendData}
+      when "write-extended-attributes"
+        translate_perm_names("write") + %w{WriteExtendedAttributes}
+      when "write-attributes"
+        translate_perm_names("write") + %w{WriteAttributes}
+      when "read-data", "list-directory"
+        translate_perm_names("read") + %w{ReadData ListDirectory}
+      when "read-attributes"
+        translate_perm_names("read") + %w{ReadAttributes}
+      when "read-extended-attributes"
+        translate_perm_names("read") + %w{ReadExtendedAttributes}
+      when "read-permissions"
+        translate_perm_names("read") + %w{ReadPermissions}
+      end
+    end
   end
 end
 ```
-:::tip The `nginx_conf` resource docs
-[`nginx_conf`](https://www.inspec.io/docs/reference/resources/nginx_conf/)
-:::
-
-The second control resembles the first; however, this version uses multiple `its` statements and the `nginx.modules` method. The `nginx.modules` method returns a list; the built-in `include` matcher verifies whether a value belongs to a given list.
-
-Run `inspec exec` on the target.
-
-```
-$ inspec exec /root/my_nginx -t ssh://TARGET_USERNAME:TARGET_PASSWORD@TARGET_IP
-
-  Profile: InSpec Profile (my_nginx)
-  Version: 0.1.0
-  Target:  ssh://TARGET_USERNAME@TARGET_IP:22
-
-    ✔  nginx-version: NGINX version
-       ✔  Nginx Environment version should cmp >= "1.10.3"
-    ✔  nginx-modules: NGINX version
-       ✔  Nginx Environment modules should include "http_ssl"
-       ✔  Nginx Environment modules should include "stream_ssl"
-       ✔  Nginx Environment modules should include "mail_ssl"
-
-
-  Profile Summary: 2 successful controls, 0 control failures, 0 controls skipped
-  Test Summary: 4 successful, 0 failures, 0 skipped
-```
-
-This time, both controls pass.
-
-The third requirement verifies that the NGINX configuration file, `/etc/nginx/nginx.conf`:
-
-* is owned by the root user and group.
-* is not be readable, writeable, or executable by others.
-
-Modify your control file like this.
-
+### 8.3. Directory
 ```ruby
-control 'nginx-conf' do
-  impact 1.0
-  title 'NGINX configuration'
-  desc 'The NGINX config file should owned by root, be writable only by owner, and not writeable or and readable by others.'
-  describe file('/etc/nginx/nginx.conf') do
-    it { should be_owned_by 'root' }
-    it { should be_grouped_into 'root' }
-    it { should_not be_readable.by('others') }
-    it { should_not be_writable.by('others') }
-    it { should_not be_executable.by('others') }
+require "inspec/resources/file"
+
+module Inspec::Resources
+  class Directory < FileResource
+    name "directory"
+    supports platform: "unix"
+    supports platform: "windows"
+    desc "Use the directory InSpec audit resource to test if the file type is a directory. This is equivalent to using the file InSpec audit resource and the be_directory matcher, but provides a simpler and more direct way to test directories. All of the matchers available to file may be used with directory."
+    example <<~EXAMPLE
+      describe directory('path') do
+        it { should be_directory }
+      end
+    EXAMPLE
+
+    def exist?
+      file.exist? && file.directory?
+    end
+
+    def to_s
+      "Directory #{source_path}"
+    end
   end
 end
 ```
-:::tip The `file` resource docs
-[`file`](https://www.inspec.io/docs/reference/resources/file/)
-:::
-
-The third control uses the `file` resource. The first 2 tests use `should` to verify the `root` owner and group. The last 3 tests use `should_not` to verify that the file is not readable, writable, or executable by others.
-
-Run `inspec exec` on the target.
-
-```
-$ inspec exec /root/my_nginx -t ssh://TARGET_USERNAME:TARGET_PASSWORD@TARGET_IP
-
-  Profile: InSpec Profile (my_nginx)
-  Version: 0.1.0
-  Target:  ssh://TARGET_USERNAME@TARGET_IP:22
-
-    ...
-    ×  nginx-conf: NGINX configuration (1 failed)
-       ✔  File /etc/nginx/nginx.conf should be owned by "root"
-       ✔  File /etc/nginx/nginx.conf should be grouped into "root"
-       ×  File /etc/nginx/nginx.conf should not be readable by others
-       expected File /etc/nginx/nginx.conf not to be readable by others
-       ✔  File /etc/nginx/nginx.conf should not be writable by others
-       ✔  File /etc/nginx/nginx.conf should not be executable by others
-
-
-  Profile Summary: 2 successful controls, 1 control failure, 0 controls skipped
-  Test Summary: 8 successful, 1 failure, 0 skipped
-```
-
-This time you see a failure. You discover that `/etc/nginx/nginx.conf` is potentially readable by others. Because this control also has an impact of 1.0, your team may need to investigate further.
-
-Remember, the first step, detect, is where you identify where the problems are so that you can accurately assess risk and prioritize remediation actions. For the second step, correct, you can use Chef or some other continuous automation framework to correct compliance failures for you. You won't correct this issue in this module, but later you can check out the [Integrated Compliance with Chef](https://learn.chef.io/tracks/integrated-compliance#/) track to learn more about how to correct compliance issues using Chef.
-
-
-
-### 4.6. Refactor the code to use Attributes
-Your `my_nginx` profile is off to a great start. As your requirements evolve, you can add additional controls. You can also run this profile as often as you need to verify whether your systems remain in compliance.
-
-Let's review the control file, `example.rb`.
-
+### 8.4. command
 ```ruby
-control 'nginx-version' do
-  impact 1.0
-  title 'NGINX version'
-  desc 'The required version of NGINX should be installed.'
-  describe nginx do
-    its('version') { should cmp >= '1.10.3' }
-  end
-end
-:::tip The `nginx_conf` resource docs
-[`nginx_conf`](https://www.inspec.io/docs/reference/resources/nginx_conf/)
-:::
+# copyright: 2015, Vulcano Security GmbH
 
-control 'nginx-modules' do
-  impact 1.0
-  title 'NGINX modules'
-  desc 'The required NGINX modules should be installed.'
-  describe nginx do
-    its('modules') { should include 'http_ssl' }
-    its('modules') { should include 'stream_ssl' }
-    its('modules') { should include 'mail_ssl' }
-  end
-end
+require "inspec/resource"
 
-control 'nginx-conf' do
-  impact 1.0
-  title 'NGINX configuration'
-  desc 'The NGINX config file should owned by root, be writable only by owner, and not writeable or and readable by others.'
-  describe file('/etc/nginx/nginx.conf') do
-    it { should be_owned_by 'root' }
-    it { should be_grouped_into 'root' }
-    it { should_not be_readable.by('others') }
-    it { should_not be_writable.by('others') }
-    it { should_not be_executable.by('others') }
+module Inspec::Resources
+  class Cmd < Inspec.resource(1)
+    name "command"
+    supports platform: "unix"
+    supports platform: "windows"
+    desc "Use the command InSpec audit resource to test an arbitrary command that is run on the system."
+    example <<~EXAMPLE
+      describe command('ls -al /') do
+        its('stdout') { should match /bin/ }
+        its('stderr') { should eq '' }
+        its('exit_status') { should eq 0 }
+      end
+
+      command('ls -al /').exist? will return false. Existence of command should be checked this way.
+      describe command('ls') do
+        it { should exist }
+      end
+    EXAMPLE
+
+    attr_reader :command
+
+    def initialize(cmd, options = {})
+      if cmd.nil?
+        raise "InSpec `command` was called with `nil` as the argument. This is not supported. Please provide a valid command instead."
+      end
+
+      @command = cmd
+
+      if options[:redact_regex]
+        unless options[:redact_regex].is_a?(Regexp)
+          # Make sure command is replaced so sensitive output isn't shown
+          @command = "ERROR"
+          raise Inspec::Exceptions::ResourceFailed,
+            "The `redact_regex` option must be a regular expression"
+        end
+        @redact_regex = options[:redact_regex]
+      end
+    end
+
+    def result
+      @result ||= inspec.backend.run_command(@command)
+    end
+
+    def stdout
+      result.stdout
+    end
+
+    def stderr
+      result.stderr
+    end
+
+    def exit_status
+      result.exit_status.to_i
+    end
+
+    def exist? # rubocop:disable Metrics/AbcSize
+      # silent for mock resources
+      return false if inspec.os.name.nil? || inspec.os.name == "mock"
+
+      if inspec.os.linux?
+        res = if inspec.platform.name == "alpine"
+                inspec.backend.run_command("which \"#{@command}\"")
+              else
+                inspec.backend.run_command("bash -c 'type \"#{@command}\"'")
+              end
+      elsif inspec.os.windows?
+        res = inspec.backend.run_command("Get-Command \"#{@command}\"")
+      elsif inspec.os.unix?
+        res = inspec.backend.run_command("type \"#{@command}\"")
+      else
+        warn "`command(#{@command}).exist?` is not supported on your OS: #{inspec.os[:name]}"
+        return false
+      end
+      res.exit_status.to_i == 0
+    end
+
+    def to_s
+      output = "Command: `#{@command}`"
+      # Redact output if the `redact_regex` option is passed
+      # If no capture groups are passed then `\1` and `\2` are ignored
+      output.gsub!(@redact_regex, '\1REDACTED\2') unless @redact_regex.nil?
+      output
+    end
   end
 end
 ```
-:::tip The `nginx_conf` resource docs
-[`nginx_conf`](https://www.inspec.io/docs/reference/resources/nginx_conf/)
-:::
-
-Although these rules do what you expect, imagine your control file contains dozens or hundreds of tests. As the data you check for, such as the version or which modules are installed, evolve, it can become tedious to locate and update your tests. You may also find that you repeat the same data in across multiple control files.
-
-One way to improve these tests is to use Attributes. Attributes enable you to separate the logic of your tests from the data your tests validate. Attribute files are typically expressed as a YAML file.
-
-Profile Attributes exist in your profile's main directory within the `inspec.yml` for global Attributes to be used across your profile or in your `attributes` folder for custom Attributes. Start by creating this directory.
-
-```Yaml
-name: my_nginx
-title: InSpec Profile
-maintainer: The Authors
-copyright: The Authors
-copyright_email: you@example.com
-license: Apache-2.0
-summary: An InSpec Compliance Profile
-version: 0.1.0
-supports:
-  platform: os
-
-attributes:
-  - name: nginx_version
-    type: string
-    default: 1.10.3
-```
-
-To access an attribute you will use the attribute keyword. You can use this anywhere in your control code.
-
-For example:
-
+### 8.5. Docker
 ```ruby
-nginx_version = attribute('nginx_version')
+#
+# Copyright 2017, Christoph Hartmann
+#
 
-control 'nginx-version' do
-  impact 1.0
-  title 'NGINX version'
-  desc 'The required version of NGINX should be installed.'
-  describe nginx do
-    its('version') { should cmp >= nginx_version }
+require "inspec/resources/command"
+require "inspec/utils/filter"
+require "hashie/mash"
+
+module Inspec::Resources
+  class DockerContainerFilter
+    # use filtertable for containers
+    filter = FilterTable.create
+    filter.register_custom_matcher(:exists?) { |x| !x.entries.empty? }
+    filter.register_column(:commands, field: "command")
+      .register_column(:ids,            field: "id")
+      .register_column(:images,         field: "image")
+      .register_column(:labels,         field: "labels", style: :simple)
+      .register_column(:local_volumes,  field: "localvolumes")
+      .register_column(:mounts,         field: "mounts")
+      .register_column(:names,          field: "names")
+      .register_column(:networks,       field: "networks")
+      .register_column(:ports,          field: "ports")
+      .register_column(:running_for,    field: "runningfor")
+      .register_column(:sizes,          field: "size")
+      .register_column(:status,         field: "status")
+      .register_custom_matcher(:running?) do |x|
+        x.where { status.downcase.start_with?("up") }
+      end
+    filter.install_filter_methods_on_resource(self, :containers)
+
+    attr_reader :containers
+    def initialize(containers)
+      @containers = containers
+    end
   end
-end
-```
 
-For our next control we require specific modules
+  class DockerImageFilter
+    filter = FilterTable.create
+    filter.register_custom_matcher(:exists?) { |x| !x.entries.empty? }
+    filter.register_column(:ids, field: "id")
+      .register_column(:repositories,  field: "repository")
+      .register_column(:tags,          field: "tag")
+      .register_column(:sizes,         field: "size")
+      .register_column(:digests,       field: "digest")
+      .register_column(:created,       field: "createdat")
+      .register_column(:created_since, field: "createdsize")
+    filter.install_filter_methods_on_resource(self, :images)
 
-Example of adding an array object of servers:
+    attr_reader :images
+    def initialize(images)
+      @images = images
+    end
+  end
 
+  class DockerPluginFilter
+    filter = FilterTable.create
+    filter.add(:ids, field: "id")
+      .add(:names,    field: "name")
+      .add(:versions, field: "version")
+      .add(:enabled,  field: "enabled")
+    filter.connect(self, :plugins)
 
-```YAML
-attributes:
-  - name: servers
-    type: array
-    default:
-      - server1
-      - server2
-      - server3
-```
+    attr_reader :plugins
+    def initialize(plugins)
+      @plugins = plugins
+    end
+  end
 
-Similarly as the above example we can edit our `inspec.yml` file like this:
-```YAML
-name: my_nginx
-title: InSpec Profile
-maintainer: The Authors
-copyright: The Authors
-copyright_email: you@example.com
-license: Apache-2.0
-summary: An InSpec Compliance Profile
-version: 0.1.0
-supports:
-  platform: os
+  class DockerServiceFilter
+    filter = FilterTable.create
+    filter.register_custom_matcher(:exists?) { |x| !x.entries.empty? }
+    filter.register_column(:ids, field: "id")
+      .register_column(:names,    field: "name")
+      .register_column(:modes,    field: "mode")
+      .register_column(:replicas, field: "replicas")
+      .register_column(:images,   field: "image")
+      .register_column(:ports,    field: "ports")
+    filter.install_filter_methods_on_resource(self, :services)
 
-attributes:
-  - name: nginx_version
-    type: string
-    default: 1.10.3
+    attr_reader :services
+    def initialize(services)
+      @services = services
+    end
+  end
 
-  - name: nginx_modules
-    type: array
-    default:
-      - http_ssl
-      - stream_ssl
-      - mail_ssl
-```
+  # This resource helps to parse information from the docker host
+  # For compatability with Serverspec we also offer the following resouses:
+  # - docker_container
+  # - docker_image
+  class Docker < Inspec.resource(1)
+    name "docker"
+    supports platform: "unix"
+    desc "
+      A resource to retrieve information about docker
+    "
 
-Your control can be changed to look like this:
-```ruby
-control 'nginx-modules' do
-  impact 1.0
-  title 'NGINX modules'
-  desc 'The required NGINX modules should be installed.'
+    example <<~EXAMPLE
+      describe docker.containers do
+        its('images') { should_not include 'u12:latest' }
+      end
 
-  nginx_modules = attribute('nginx_modules')
+      describe docker.images do
+        its('repositories') { should_not include 'inssecure_image' }
+      end
 
-  describe nginx do
-    nginx_modules.each do |current_module|
-      its('modules') { should include current_module }
+      describe docker.plugins.where { name == 'rexray/ebs' } do
+        it { should exist }
+      end
+
+      describe docker.services do
+        its('images') { should_not include 'inssecure_image' }
+      end
+
+      describe docker.version do
+        its('Server.Version') { should cmp >= '1.12'}
+        its('Client.Version') { should cmp >= '1.12'}
+      end
+
+      describe docker.object(id) do
+        its('Configuration.Path') { should eq 'value' }
+      end
+
+      docker.containers.ids.each do |id|
+        # call docker inspect for a specific container id
+        describe docker.object(id) do
+          its(%w(HostConfig Privileged)) { should cmp false }
+          its(%w(HostConfig Privileged)) { should_not cmp true }
+        end
+      end
+    EXAMPLE
+
+    def containers
+      DockerContainerFilter.new(parse_containers)
+    end
+
+    def images
+      DockerImageFilter.new(parse_images)
+    end
+
+    def plugins
+      DockerPluginFilter.new(parse_plugins)
+    end
+
+    def services
+      DockerServiceFilter.new(parse_services)
+    end
+
+    def version
+      return @version if defined?(@version)
+
+      data = {}
+      cmd = inspec.command("docker version --format '{{ json . }}'")
+      data = JSON.parse(cmd.stdout) if cmd.exit_status == 0
+      @version = Hashie::Mash.new(data)
+    rescue JSON::ParserError => _e
+      Hashie::Mash.new({})
+    end
+
+    def info
+      return @info if defined?(@info)
+
+      data = {}
+      # docke info format is only supported for Docker 17.03+
+      cmd = inspec.command("docker info --format '{{ json . }}'")
+      data = JSON.parse(cmd.stdout) if cmd.exit_status == 0
+      @info = Hashie::Mash.new(data)
+    rescue JSON::ParserError => _e
+      Hashie::Mash.new({})
+    end
+
+    # returns information about docker objects
+    def object(id)
+      return @inspect if defined?(@inspect)
+
+      data = JSON.parse(inspec.command("docker inspect #{id}").stdout)
+      data = data[0] if data.is_a?(Array)
+      @inspect = Hashie::Mash.new(data)
+    rescue JSON::ParserError => _e
+      Hashie::Mash.new({})
+    end
+
+    def to_s
+      "Docker Host"
+    end
+
+    private
+
+    def parse_json_command(labels, subcommand)
+      # build command
+      format = labels.map { |label| "\"#{label}\": {{json .#{label}}}" }
+      raw = inspec.command("docker #{subcommand} --format '{#{format.join(", ")}}'").stdout
+      output = []
+      # since docker is not outputting valid json, we need to parse each row
+      raw.each_line do |entry|
+        # convert all keys to lower_case to work well with ruby and filter table
+        row = JSON.parse(entry).map do |key, value|
+          [key.downcase, value]
+        end.to_h
+
+        # ensure all keys are there
+        row = ensure_keys(row, labels)
+
+        # strip off any linked container names
+        # Depending on how it was linked, the actual container name may come before
+        # or after the link information, so we'll just look for the first name that
+        # does not include a slash since that is not a valid character in a container name
+        if row["names"]
+          row["names"] = row["names"].split(",").find { |c| !c.include?("/") }
+        end
+
+        # Split labels on ',' or set to empty array
+        # Allows for `docker.containers.where { labels.include?('app=redis') }`
+        row["labels"] = row.key?("labels") ? row["labels"].split(",") : []
+
+        output.push(row)
+      end
+
+      output
+    rescue JSON::ParserError => _e
+      warn "Could not parse `docker #{subcommand}` output"
+      []
+    end
+
+    def parse_containers
+      # @see https://github.com/moby/moby/issues/20625, works for docker 1.13+
+      # raw_containers = inspec.command('docker ps -a --no-trunc --format \'{{ json . }}\'').stdout
+      # therefore we stick with older approach
+      labels = %w{Command CreatedAt ID Image Labels Mounts Names Ports RunningFor Size Status}
+
+      # Networks LocalVolumes work with 1.13+ only
+      if !version.empty? && Gem::Version.new(version["Client"]["Version"]) >= Gem::Version.new("1.13")
+        labels.push("Networks")
+        labels.push("LocalVolumes")
+      end
+      parse_json_command(labels, "ps -a --no-trunc")
+    end
+
+    def parse_services
+      parse_json_command(%w{ID Name Mode Replicas Image Ports}, "service ls")
+    end
+
+    def ensure_keys(entry, labels)
+      labels.each do |key|
+        entry[key.downcase] = nil unless entry.key?(key.downcase)
+      end
+      entry
+    end
+
+    def parse_images
+      # docker does not support the `json .` function here, therefore we need to emulate that behavior.
+      raw_images = inspec.command('docker images -a --no-trunc --format \'{ "id": {{json .ID}}, "repository": {{json .Repository}}, "tag": {{json .Tag}}, "size": {{json .Size}}, "digest": {{json .Digest}}, "createdat": {{json .CreatedAt}}, "createdsize": {{json .CreatedSince}} }\'').stdout
+      c_images = []
+      raw_images.each_line do |entry|
+        c_images.push(JSON.parse(entry))
+      end
+      c_images
+    rescue JSON::ParserError => _e
+      warn "Could not parse `docker images` output"
+      []
+    end
+
+    def parse_plugins
+      plugins = inspec.command('docker plugin ls --format \'{"id": {{json .ID}}, "name": "{{ with split .Name ":"}}{{index . 0}}{{end}}", "version": "{{ with split .Name ":"}}{{index . 1}}{{end}}", "enabled": {{json .Enabled}} }\'').stdout
+      c_plugins = []
+      plugins.each_line do |entry|
+        c_plugins.push(JSON.parse(entry))
+      end
+      c_plugins
+    rescue JSON::ParserError => _e
+      warn "Could not parse `docker plugin ls` output"
+      []
     end
   end
 end
 ```
 
-#### 4.6.1. Multiple Attribute Example
 
-To change your attributes for platform specific cases you can setup multiple --attrs files.
-
-For example, a inspec.yml:
-
-```YAML
-attributes:
-  - name: users
-    type: array
-    required: true
+## 9. Profile & Resource exercise
+### 9.1. Create new profile
+Let's start by creating a new profile:
+```bash
+inspec init profile git
 ```
-
-A YAML file named windows.yml
-
-```YAML
-users:
-  - Administrator
-  - Guest
-  - Randy
-```
-
-A YAML file named linux.yml
-
-```YAML
-users:
-  - root
-  - shadow
-  - rmadison
-```
-
-The control file:
-
-```Ruby
-control 'system-users' do
-  impact 0.8
-  desc 'Confirm the proper users are created on the system'
-
-  describe users do
-    its('usernames') { should eq attribute('users') }
-  end
-end
-```
-
-The following command runs the tests and applies the attributes specified:
-
-```
-$ inspec exec examples/profile-attribute --attrs examples/windows.yml
-$ inspec exec examples/profile-attribute --attrs examples/linux.yml
-```
-
-
-
-### 4.7. Running baseline straight from Github/Chef Supermarket
-In this module, we use NGINX for learning purposes. If you're interested in NGINX specifically, you may be interested in the [MITRE nginx-baseline](https://github.com/mitre/nginx-baseline) profile on GitHub. Alternatively, you may also check out the [DevSec Nginx Baseline](https://supermarket.chef.io/tools/nginx-baseline) profile on Chef Supermarket. These profiles implements many of the tests you wrote in this module.
-
-To execute the GitHub profile on your target system, run this `inspec exec` command.
-
-` $ inspec exec https://github.com/dev-sec/nginx-baseline -t ssh://TARGET_USERNAME:TARGET_PASSWORD@TARGET_IP `
-
-
-To execute the Chef Supermarket profile on your target system, run this `inspec supermarket exec` command.
-
-```
-$ inspec supermarket exec dev-sec/nginx-baseline -t ssh://TARGET_USERNAME:TARGET_PASSWORD@TARGET_IP
-  [2018-05-03T03:07:51+00:00] WARN: URL target https://github.com/dev-sec/nginx-baseline transformed to https://github.com/dev-sec/nginx-baseline/archive/master.tar.gz. Consider using the git fetcher
-
-  Profile: DevSec Nginx Baseline (nginx-baseline)
-  Version: 2.1.0
-  Target:  ssh://TARGET_USERNAME@TARGET_IP:22
-
-    ...
-    ×  nginx-02: Check NGINX config file owner, group and permissions. (1 failed)
-       ...
-       ×  File /etc/nginx/nginx.conf should not be readable by others
-       expected File /etc/nginx/nginx.conf not to be readable by others
-       ...
-       ↺  nginx-15: Content-Security-Policy
-          ↺  Can't find file "/etc/nginx/conf.d/90.hardening.conf"
-       ↺  nginx-16: Set cookie with HttpOnly and Secure flag
-          ↺  Can't find file "/etc/nginx/conf.d/90.hardening.conf"
-
-
-     Profile Summary: 2 successful controls, 7 control failures, 7 controls skipped
-     Test Summary: 10 successful, 13 failures, 10 skipped
-```
-
-You see that many of the tests pass, while others fail and may require investigation.
-
-You may want to extend the `nginx-baseline` with your own custom requirements. To do that, you might use what's called a _wrapper profile_. You can check out [Create a custom InSpec profile](https://learn.chef.io/modules/create-a-custom-profile#/) for a more complete example.
-
-## 5. Viewing and Analyzing Results
-
-InSpec allows you to output your test results to one or more reporters. You can configure the reporter(s) using either the --json-config option or the --reporter option. While you can configure multiple reporters to write to different files, only one reporter can output to the screen(stdout).
-```
-$ inspec exec /root/my_nginx -t ssh://TARGET_USERNAME:TARGET_PASSWORD@TARGET_IP --reporter cli json:baseline_output.json
-```
-
-### 5.1. Syntax
-
-You can specify one or more reporters using the --reporter cli flag. You can also specify a output by appending a path separated by a colon.
-
-Output json to screen.
-
-```
-inspec exec /root/my_nginx --reporter json
-or
-inspec exec /root/my_nginx --reporter json:-
-```
-
-Output yaml to screen
-
-```
-inspec exec /root/my_nginx --reporter yaml
-or
-inspec exec /root/my_nginx --reporter yaml:-
-```
-
-Output cli to screen and write json to a file.
-
-`inspec exec /root/my_nginx --reporter cli json:/tmp/output.json`
-
-Output nothing to screen and write junit and html to a file.
-
-`inspec exec /root/my_nginx --reporter junit:/tmp/junit.xml html:www/index.html`
-
-Output json to screen and write to a file. Write junit to a file.
-
-`inspec exec /root/my_nginx --reporter json junit:/tmp/junit.xml | tee out.json`
-
-If you wish to pass the profiles directly after specifying the reporters you will need to use the end of options flag --.
-
-`inspec exec --reporter json junit:/tmp/junit.xml -- profile1 profile2`
-
-Output cli to screen and write json to a file.
-
-```json
-{
-    "reporter": {
-        "cli" : {
-            "stdout" : true
-        },
-        "json" : {
-            "file" : "/tmp/output.json",
-            "stdout" : false
-        }
-    }
-}
-```
-
-### 5.2. Supported Reporters
-
-The following are the current supported reporters:
-
-* cli
-* json
-* json-min
-* yaml
-* documentation
-* junit
-* progress
-* json-rspec
-* html
-
-You can read more about [InSpec Reporters](https://www.inspec.io/docs/reference/reporters/) on the documentation page.
-
-### 5.3. Putting it all together
-The following command will run the nginx baseline profile from github and use the reporter to output a json, you will need this for the next step loading it into heimdall:
-
-
-` $ inspec exec https://github.com/dev-sec/nginx-baseline -t ssh://TARGET_USERNAME:TARGET_PASSWORD@TARGET_IP --reporter cli json:baseline_output.json`
-
-## 6. Automation Tools
-Navigate to the web page for [Heimdall Lite](https://mitre.github.io/heimdall-lite/)
-
-Click on the button `Load Json`
-![Alt text](../images/Heimdall_Load.png?raw=true "Heimdall Load")
-
-Click on the button `Browse`
-![Alt text](../images/Heimdall_Browse.png?raw=true "Heimdall Browse")
-
-Navigate to your json output file that you saved from your previous step and select that file then click open.
-
-This will allow you to view the InSpec results in the Heimdall viewer.
-
-
-## 7. Additional InSpec tricks
-### 7.1. rspec Explicit Subject
-Here we have a inspec test that lists out it's current directory. Our original test code looks like this
+### 9.2. Develop controls to test / run controls
+Now lets write some controls and test that they run:
 ```ruby
-describe command('ls -al').stdout.strip do
-  it { should_not be_empty }
+# encoding: utf-8
+# copyright: 2018, The Authors
+
+git_dir = "/home/chef/apache/.git"
+
+# The following banches should exist
+describe command("git --git-dir #{git_dir} branch") do
+  its('stdout') { should match /master/ }
+end
+
+describe command("git --git-dir #{git_dir} branch") do
+  its('stdout') { should match /testBranch/ }
+end
+
+# What is the current branch
+describe command("git --git-dir #{git_dir} branch") do
+  its('stdout') { should match /^\* master/ }
+end
+
+# What is the latest commit
+describe command("git --git-dir #{git_dir} log -1 --pretty=format:'%h'") do
+  its('stdout') { should match /48bf020/ }
+end
+
+# What is the second to last commit
+describe command("git --git-dir #{git_dir} log --skip=1 -1 --pretty=format:'%h'") do
+  its('stdout') { should match /09e9064/ }
 end
 ```
 
-If we would like to have a more [Explicit Subject](https://relishapp.com/rspec/rspec-core/docs/subject/explicit-subject) then we could refactor the code like this example
+
+## 10. Develop resources to take over above controls
+### 10.1. Rewrite first test
+Let's rewrite the first test in our example file as follows:
 ```ruby
-describe "this is a detailed message" do
-  subject { command('ls -al').stdout.strip }
-  it{ should_not be_empty }
+# The following banches should exist
+describe git(git_dir) do
+  its('branches') { should include 'master' }
 end
 ```
-
-### 7.2. looping file structure
-For looping through a file directory, the directory resource is not powerful enough to do that, so we are required to use the `command` resource and run a `find` or it's equivalent for your target OS. This can be very resource intensive on your target so try to be as specific as possible with your search such as the example below:
+Now let's run the profile
+```bash
+inspec exec git -t ssh://
+```
+We should get an error because the git method and resource are not defined yet
+### 10.2. Develop git resources
+Let's start by creating a new file called git.rb in the libraries directory, the content of the file should look like this:
 ```ruby
-command('find ~/* -type f -maxdepth 0 -xdev').stdout.split.each do |fname|
-  describe file(fname) do
-    its('owner') { should cmp 'ec2-user' }
-  end
+# encoding: utf-8
+# copyright: 2018, The Authors
+
+class Git < Inspec.resource(1)
+    name 'git'
+
 end
 ```
+Now run the profile again
+```bash
+inspec exec git -t ssh://
+```
+This time we get another error letting us know that we have a resource that has been given the incorrect number of arguments. This means we have given an additional parameter to this resource that we have not yet accepted.
 
-## 8. Create basic profile - DAY 2
-### 8.1. Download STIG Requirements Here
-Download the latest STIG Viewer located here [STIG Viewer](https://iase.disa.mil/stigs/pages/stig-viewing-guidance.aspx)
-![Alt text](../images/Download_STIG_Viewer.png?raw=true "STIG Viewer Download")
+Each resource will require an initialization method.
 
-
-Download the `Red Hat 6 STIG - Ver 1, Rel 21` located here [RHEL6 STIG Download](https://iase.disa.mil/stigs/Pages/a-z.aspx)
-![Alt text](../images/Download_STIG.png?raw=true "RHEL6 STIG Download")
-
-
-
-### 8.2. Example Control V-38437
-Let's take a look at how we would write a the InSpec control for V-38437:
+For our git.rb file lets add that initialization method:
 ```ruby
-control "V-38437" do
-  title "Automated file system mounting tools must not be enabled unless
-needed."
-  desc  "All filesystems that are required for the successful operation of the
-system should be explicitly listed in \"/etc/fstab\" by an administrator. New
-filesystems should not be arbitrarily introduced via the automounter.
-    The \"autofs\" daemon mounts and unmounts filesystems, such as user home
-directories shared via NFS, on demand. In addition, autofs can be used to
-handle removable media, and the default configuration provides the cdrom device
-as \"/misc/cd\". However, this method of providing access to removable media is
-not common, so autofs can almost always be disabled if NFS is not in use. Even
-if NFS is required, it is almost always possible to configure filesystem mounts
-statically by editing \"/etc/fstab\" rather than relying on the automounter.
-  "
-  impact 0.3
-  tag "gtitle": "SRG-OS-999999"
-  tag "gid": "V-38437"
-  tag "rid": "SV-50237r1_rule"
-  tag "stig_id": "RHEL-06-000526"
-  tag "fix_id": "F-43381r1_fix"
-  tag "cci": ["CCI-000366"]
-  tag "nist": ["CM-6 b", "Rev_4"]
-  tag "false_negatives": nil
-  tag "false_positives": nil
-  tag "documentable": false
-  tag "mitigations": nil
-  tag "severity_override_guidance": false
-  tag "potential_impacts": nil
-  tag "third_party_tools": nil
-  tag "mitigation_controls": nil
-  tag "responsibility": nil
-  tag "ia_controls": nil
-  tag "check": "To verify the \"autofs\" service is disabled, run the following
-command:
-chkconfig --list autofs
-If properly configured, the output should be the following:
-autofs 0:off 1:off 2:off 3:off 4:off 5:off 6:off
-Verify the \"autofs\" service is not running:
-# service autofs status
-If the autofs service is enabled or running, this is a finding."
-  tag "fix": "If the \"autofs\" service is not needed to dynamically mount NFS
-filesystems or removable media, disable the service for all runlevels:
-# chkconfig --level 0123456 autofs off
-Stop the service if it is already running:
-# service autofs stop"
+# encoding: utf-8
+# copyright: 2018, The Authors
 
-  describe service("autofs").runlevels(/0/) do
-    it { should_not be_enabled }
-  end
-  describe service("autofs").runlevels(/1/) do
-    it { should_not be_enabled }
-  end
-  describe service("autofs").runlevels(/2/) do
-    it { should_not be_enabled }
-  end
-  describe service("autofs").runlevels(/3/) do
-    it { should_not be_enabled }
-  end
-  describe service("autofs").runlevels(/4/) do
-    it { should_not be_enabled }
-  end
-  describe service("autofs").runlevels(/5/) do
-    it { should_not be_enabled }
-  end
-  describe service("autofs").runlevels(/6/) do
-    it { should_not be_enabled }
-  end
+class Git < Inspec.resource(1)
+    name 'git'
+
+    def initialize(path)
+        @path = path
+    end
+
 end
 ```
-### 8.3. Getting Started on the RHEL6 baseline
+This is saving the path we are passing in from the control into an instance method called path.
 
-__Controls we will demo:__
-- V-38451 <---file resource
-- V-38472 <---directory looping & command resource
-- V-38473 <---mount resource
-- V-38595 <---manual test
-- V-38599 <---non applicable use case & package resource & command resource & parse config file resource
+Now when we run the profile
+```bash
+inspec exec git -t ssh://
+```
+The test will run but we will get an error saying we do not have a "branches" method.
 
-__Suggested Controls to start on (Simple):__
-- V-38450 <---file resource
-- V-38469 <---directory looping & command resource
-- V-38456 <---mount resource
-- V-38659 <---manual test
+So let's go back to our ruby.rb file to fix that as seen below:
+```ruby
+# encoding: utf-8
+# copyright: 2018, The Authors
 
-__Suggested Controls to start on (Hard):__
-- V-38446 <---parse config & command
-- V-38464 <---parse config file
-- V-38490 <---kernel module
-- V-38537 <---kernel parameter
-- V-38576 <---file content
-- V-38474 <---non applicable use case
+class Git < Inspec.resource(1)
+    name 'git'
 
-__Suggested InSpec Resources to use:__
-- [command](https://www.inspec.io/docs/reference/resources/command/)
-- [file](https://www.inspec.io/docs/reference/resources/file/)
-- [directory](https://www.inspec.io/docs/reference/resources/directory/)
-- [parse_config_file](https://www.inspec.io/docs/reference/resources/parse_config_file/)
-- [kernel_module](https://www.inspec.io/docs/reference/resources/kernel_module/)
-- [package](https://www.inspec.io/docs/reference/resources/package/)
+    def initialize(path)
+        @path = path
+    end
 
-### 8.4. Completed RHEL6 Profile for Reference
+    def branches
 
-Below is the url to the completed RHEL6 Inspec Profile for reference.  
-[red-hat-enterprise-linux-6-stig-baseline](https://github.com/mitre/red-hat-enterprise-linux-6-stig-baseline)
+    end
+
+end
+```
+At this point all we have done is just define the branches method lets see how the run changes from here
+```bash
+inspec exec git -t ssh://
+```
+
+Now the error message says that the branches method is returning a null value when it's expecting an array or something that is able to accept the include method invoked on it
+
+We can use the inspec helper method which enables you to invoke any other inspec resource as seen below:
+```ruby
+# encoding: utf-8
+# copyright: 2018, The Authors
+
+class Git < Inspec.resource(1)
+    name 'git'
+
+    def initialize(path)
+        @path = path
+    end
+
+    def branches
+        inspec.command("git --git-dir #{@path} branch").stdout
+    end
+
+end
+```
+Now we see that we get a passing test!
+
+Now let's adjust our test to also check for our second branch that we created earlier as well as check our current branch:
+```ruby
+# The following banches should exist
+describe git(git_dir) do
+  its('branches') { should include 'master' }
+  its('branches') { should include 'testBranch' }
+  its('current_branch') { should cmp 'master' }
+end
+```
+
+Let's head over to the git.rb file to create the current_branch method we are invoking in the above test:
+```ruby
+# encoding: utf-8
+# copyright: 2018, The Authors
+
+class Git < Inspec.resource(1)
+    name 'git'
+
+    def initialize(path)
+        @path = path
+    end
+
+    def branches
+        inspec.command("git --git-dir #{@path} branch").stdout
+    end
+
+    def current_branch
+        branch_name = inspec.command("git --git-dir #{@path} branch").stdout.strip.split("\n").find do |name|
+            name.start_with?('*')
+        end
+        branch_name.gsub(/^\*/,'').strip
+    end
+
+end
+```
+Now we can run the profile again
+```bash
+inspec exec git -t ssh://
+```
+All the tests should pass!
+
+EXERCISE:  
+As solo exercise try to create the final method in the git.rb file to check what is the last commit.
+### 10.3. Develop docker resources
+### 10.4. Rewrite tests and run controls
 
 
+## 11. Resource Development exercise
+### 11.1. What the resource should do
+  - a
+  - b
+  - c
+  - d
 
-## 9. Using what you've learned
+
+## 12. DAY 2: Exercise developing your own resources.
+  - 1
+    - a
+    - b
+    - c
+  - 2
+    - a
+    - b
+    - c
+  - 3
+    - a
+    - b
+    - c
+  - 4
+    - a
+    - b
+    - c
+  - 5
+    - a
+    - b
+    - c
+
+
+## 13. DAY 3: Pushing your resource up to inspec
+Fork -> Branch -> list directories where changes need to be made.
+Go over writing test cases for resource
+
+
+## 14. DAY 3: Update a few resources that were previously built and show the process for moving that resource to be put in inspec
+
+
+## 15. Using what you've learned
 
 Now you should be able to
 -	Describe the InSpec framework and its capabilities
@@ -1275,19 +1466,13 @@ Otherwise you can create your own profiles if they don't exist using the followi
 [https://www.cisecurity.org/cis-benchmarks/](https://www.cisecurity.org/cis-benchmarks/)  
 
 
+## 16. Additional Resources
 
-## 10. Cleanup Environments
-If you're done with your vagrant boxes, run the following command to destroy them:
-`vagrant destroy -f`
-
-
-## 11. Additional Resources
-
-### 11.1 Security Guidance
+### 16.1 Security Guidance
 [https://iase.disa.mil/stigs/Pages/a-z.aspx](https://iase.disa.mil/stigs/Pages/a-z.aspx)  
 [https://www.cisecurity.org/cis-benchmarks/](https://www.cisecurity.org/cis-benchmarks/)  
 
-### 11.2 InSpec Documentation
+### 16.2 InSpec Documentation
 [InSpec Docs](https://www.inspec.io/docs/)  
 [InSpec Profiles](https://www.inspec.io/docs/reference/profiles/)  
 [InSpec Resources](https://www.inspec.io/docs/reference/resources/)  
@@ -1296,21 +1481,21 @@ If you're done with your vagrant boxes, run the following command to destroy the
 [InSpec Reporters](https://www.inspec.io/docs/reference/reporters/)  
 [InSpec Profile Inheritance](https://blog.chef.io/2017/07/06/understanding-inspec-profile-inheritance/)  
 
-### 11.3 Additional Tutorials
+### 16.3 Additional Tutorials
 [What to Expect When You’re InSpec’ing](https://blog.chef.io/2018/04/03/what-to-expect-when-youre-inspecing/)  
 [Getting started with InSpec - The InSpec basics series](http://www.anniehedgie.com/inspec/)  
 [Windows infrastructure testing using InSpec – Part I](http://datatomix.com/?p=236)  
 [Windows infrastructure testing using InSpec and Profiles – Part II](http://datatomix.com/?p=238)  
 
-### 11.4 MITRE InSpec
+### 16.4 MITRE InSpec
 [MITRE InSpec Repositories](https://github.com/orgs/mitre/teams/inspec/repositories)  
 [InSpec Tools](https://github.com/mitre/inspec_tools)  
 [Heimdall Lite](https://mitre.github.io/heimdall-lite/#)  
 
-### 11.5. rspec documentation
+### 16.5. rspec documentation
 [Explicit Subject](https://relishapp.com/rspec/rspec-core/docs/subject/explicit-subject)  
 [should and should_not](https://github.com/rspec/rspec-expectations/blob/master/Should.md)  
 [Built in matchers](https://relishapp.com/rspec/rspec-expectations/docs/built-in-matchers)  
 
-### 11.6. Slack
+### 16.6. Slack
 [Chef Slack](http://community-slack.chef.io/)  
